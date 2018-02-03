@@ -5,8 +5,9 @@ using DG.Tweening;
 
 
 public class Gamecontroller : MonoBehaviour {
-
-
+    public Transform[] playTracks = new Transform[2];
+    public Transform[] playTrackPositions = new Transform[2];
+    public Transform rider;
 	// Use this for initialization
 	void Start () {
         InitialiseScene();
@@ -14,7 +15,10 @@ public class Gamecontroller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(Input.GetKeyDown(KeyCode.T))
+        {
+            SwitchTrack();
+        }
 	}
 
     void InitialiseScene()
@@ -26,6 +30,36 @@ public class Gamecontroller : MonoBehaviour {
         
        
     }
+
+    public void SwitchTrack()
+    {
+        Debug.Log("Switching track!");
+
+        if (rider.transform.parent.name != "PlayTrack1" && rider.transform.parent.name != "PlayTrack2")
+        {
+            rider.transform.parent = GameObject.Find("PlayTrack1").transform;
+            return;
+        }
+
+       if(rider.transform.parent.name != "PlayTrack1")
+        {
+            rider.transform.parent = GameObject.Find("PlayTrack1").transform;
+            rider.transform.position = playTrackPositions[0].position;
+            // Also move between them!
+            Debug.Log("Switching track!");
+        }
+        else
+        {
+            Debug.Log("Switching track!");
+
+            rider.transform.parent = GameObject.Find("PlayTrack2").transform;
+            // Also move between them!
+            rider.transform.position = playTrackPositions[1].position;
+
+        }
+
+    }
+
 
     void PlayerActivate()
     {
@@ -56,7 +90,7 @@ public class Gamecontroller : MonoBehaviour {
 
         Transform rider = GameObject.Find("Rider").transform;
         Sequence riderSeq = DOTween.Sequence();
-        riderSeq.Append(rider.DOScale(1f, 3f));
+        riderSeq.Append(rider.DOScale(1f, 2.6f));
 
     }
 }

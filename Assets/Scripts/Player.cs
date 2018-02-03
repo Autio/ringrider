@@ -13,4 +13,15 @@ public class Player : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.transform.name == "StartTrigger")
+        {
+            // The player has landed and should be parented to the inner circle
+            this.GetComponent<Rigidbody2D>().simulated = false;
+            this.transform.parent = GameObject.Find("PlayTrack1").transform;
+            GameObject.Find("- GameController").GetComponent<Gamecontroller>().SwitchTrack();
+        }
+    }
 }
