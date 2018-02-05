@@ -7,6 +7,7 @@ using DG.Tweening;
 public class Gamecontroller : MonoBehaviour {
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
+    public Transform[] obstacleSpawns = new Transform[2];
     public Transform rider;
     float switchCooldown = 0.07f;
     public Transform block;
@@ -63,18 +64,18 @@ public class Gamecontroller : MonoBehaviour {
 
     void SpawnBlock()
     {
-        Transform newBlock = Instantiate(block, new Vector2(-1.95f, 0), Quaternion.identity);
-        Transform newBlock2 = Instantiate(block, new Vector2(-2.55f, 0), Quaternion.identity);
+        Transform newBlock = Instantiate(block, new Vector2(obstacleSpawns[0].position.x, obstacleSpawns[0].position.y), Quaternion.identity);
+        Transform newBlock2 = Instantiate(block, new Vector2(obstacleSpawns[1].position.x, obstacleSpawns[1].position.y), Quaternion.identity);
 
         if (Random.Range(0, 10) < 5)
         {
-            newBlock.transform.GetComponent<BoxCollider2D>().isTrigger = true;
+            newBlock.transform.GetComponent<Collider2D>().isTrigger = true;
             newBlock.GetComponent<SpriteRenderer>().enabled = false;
             newBlock.transform.tag = "Points";
         }
         else
         {
-            newBlock2.transform.GetComponent<BoxCollider2D>().isTrigger = true;
+            newBlock2.transform.GetComponent<Collider2D>().isTrigger = true;
             newBlock2.GetComponent<SpriteRenderer>().enabled = false;
             newBlock2.transform.tag = "Points";
         }
