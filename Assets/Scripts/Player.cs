@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Player : MonoBehaviour {
     int lapCounter = 0;
@@ -9,7 +10,7 @@ public class Player : MonoBehaviour {
     float speedModifier = 1.05f;
     // Use this for initialization
     void Start () {
-        GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
+        //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
     }
 
     // Update is called once per frame
@@ -21,12 +22,13 @@ public class Player : MonoBehaviour {
     {
         // increase rotation speed
         lapCounter++;
-        Debug.Log("Lap! " + lapCounter.ToString());
+        //Debug.Log("Lap! " + lapCounter.ToString());
 
         GameObject.Find("PlayTracks").GetComponent<Rotate>().speed *= speedModifier;
 
         // Display laps
-        GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
+        UpdateText(GameObject.Find("LapText").GetComponent<Text>(), lapCounter.ToString());
+
     }
 
     void GameOver()
@@ -43,7 +45,8 @@ public class Player : MonoBehaviour {
     void Points()
     {
         points++;
-        GameObject.Find("PointsText").GetComponent<Text>().text = "Points: " + points.ToString();
+        UpdateText(GameObject.Find("PointsText").GetComponent<Text>(), points.ToString());
+//        GameObject.Find("PointsText").GetComponent<Text>().text = "Points: " + points.ToString();
     }
 
     private IEnumerator WaitEnd()
@@ -87,5 +90,18 @@ public class Player : MonoBehaviour {
         {
             Points();
         }
+    }
+
+
+    private void UpdateText(Text t, string s)
+    {
+        t.text = s;
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(t.transform.DOScale(1.1f, 0.2f));
+        seq.Append(t.transform.DOScale(0.9f, 0.2f));
+        seq.Append(t.transform.DOScale(1.0f, 0.2f));
+
     }
 }

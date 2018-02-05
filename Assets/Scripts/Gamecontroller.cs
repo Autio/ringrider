@@ -44,7 +44,7 @@ public class Gamecontroller : MonoBehaviour {
             counter -= Time.deltaTime;
             if (counter < 0)
             {
-                counter = Random.Range(1.5f, 3.5f);
+                counter = Random.Range(1f, 2.5f);
                 SpawnBlock();
             }
         }
@@ -62,8 +62,38 @@ public class Gamecontroller : MonoBehaviour {
 
     }
 
+    bool CheckSpawnProximity()
+    {
+        Collider2D[] c = Physics2D.OverlapCircleAll(obstacleSpawns[0].transform.position, 0.75f);
+        try
+        {
+            foreach(Collider2D cd in c)
+            {
+                if(cd.transform.tag == "Obstacle")
+                {
+                    return true;
+                }
+            }
+        }
+        catch
+        {
+
+        }
+        return false;
+    }
+
     void SpawnBlock()
     {
+        // Check if close to existing block
+        
+        bool tooClose = false;
+        tooClose = CheckSpawnProximity();
+        if (tooClose)
+        {
+            // If too close, reset the timer
+            return;
+        }
+
         Transform newBlock = Instantiate(block, new Vector2(obstacleSpawns[0].position.x, obstacleSpawns[0].position.y), Quaternion.identity);
         Transform newBlock2 = Instantiate(block, new Vector2(obstacleSpawns[1].position.x, obstacleSpawns[1].position.y), Quaternion.identity);
 
@@ -154,12 +184,13 @@ public class Gamecontroller : MonoBehaviour {
         mySequence.Append(target.DOScale(0.8f, 0.45f));
         mySequence.Append(target.DOScale(0.6f, 0.35f));
         mySequence.Append(target.DOScale(1.2f, 0.5f));
-        mySequence.Append(target.DOScale(0.75f, 0.4f));
-        mySequence.Append(target.DOScale(1f, 0.7f)).OnComplete(PlayerActivate);
+        mySequence.Append(target.DOScale(0.6f, 0.4f));
+        mySequence.Append(target.DOScale(1f, 0.8f)).OnComplete(PlayerActivate);
 
         Transform rider = GameObject.Find("Rider").transform;
         Sequence riderSeq = DOTween.Sequence();
         riderSeq.Append(rider.DOScale(1f, 2.6f));
 
     }
+
 }
