@@ -7,7 +7,7 @@ using DG.Tweening;
 public class Player : MonoBehaviour {
     int lapCounter = 0;
     int points = 0;
-    float speedModifier = 1.05f;
+    float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
     // Use this for initialization
     void Start () {
         //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
@@ -38,8 +38,24 @@ public class Player : MonoBehaviour {
         // Stop movement
         GameObject.Find("PlayTracks").GetComponent<Rotate>().active = false;
         GameObject.Find("ObstacleTracks").GetComponent<Rotate>().active = false;
-        StartCoroutine(WaitEnd());
+
+        // Set gamestate to transition
+        GameObject.Find("- GameController").GetComponent<Gamecontroller>().SetState(Gamecontroller.gameStates.transition);
+
+
+        // Juice
+        // Move player back to centre
+        Sequence seq = DOTween.Sequence();
+        seq.Append(this.transform.DOScale(0.25f, 0.1f));
+        seq.Append(this.transform.DOScale(0.05f, 0.1f));
+        seq.Append(this.transform.DOScale(0.4f, 0.1f));
+
+        this.transform.DOScale(0.06f, 3.2f);
+        this.transform.DOMove(new Vector3(0, 0, 0), 3.2f);
+
         // Reset scene after a delay
+
+        StartCoroutine(WaitEnd());
     }
 
     void Points()
@@ -53,7 +69,7 @@ public class Player : MonoBehaviour {
     {
         while(true)
         {
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(5.2f);
             Application.LoadLevel(0);
         }
     }

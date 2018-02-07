@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 3566dc20b634a644d994ee9706036535
+timeCreated: 1517996951
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bazaronite
+  fontNames:
+  - Bazaronite
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -8,22 +8,26 @@ public class Gamecontroller : MonoBehaviour {
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
     public Transform[] obstacleSpawns = new Transform[2];
+    public Color[] backgroundColors;
     public Transform rider;
     float switchCooldown = 0.07f;
     public Transform block;
     private float counter = 1.0f;
     bool gameLive = false;
+
+    public enum gameStates { playing, paused, transition };
+    gameStates gameState = gameStates.transition;
+
     // Use this for initialization
     void Start() {
         InitialiseScene();
+        ColourTransition();
     }
 
     // Update is called once per frame
     void Update() {
-
-
-        
-        if (gameLive)
+                
+        if (gameState == gameStates.playing)
         {
 
             if (Input.GetKeyDown(KeyCode.Space))
@@ -84,35 +88,40 @@ public class Gamecontroller : MonoBehaviour {
 
     void SpawnBlock()
     {
-        // Check if close to existing block
-        
-        bool tooClose = false;
-        tooClose = CheckSpawnProximity();
-        if (tooClose)
+        // Only spawn when playing
+        if (gameState == gameStates.playing)
         {
-            // If too close, reset the timer
-            return;
-        }
+            // Check if close to existing block
 
-        Transform newBlock = Instantiate(block, new Vector2(obstacleSpawns[0].position.x, obstacleSpawns[0].position.y), Quaternion.identity);
-        Transform newBlock2 = Instantiate(block, new Vector2(obstacleSpawns[1].position.x, obstacleSpawns[1].position.y), Quaternion.identity);
+            bool tooClose = false;
+            tooClose = CheckSpawnProximity();
+            if (tooClose)
+            {
+                // If too close, reset the timer
+                return;
+            }
 
-        if (Random.Range(0, 10) < 5)
-        {
-            newBlock.transform.GetComponent<Collider2D>().isTrigger = true;
-            newBlock.GetComponent<SpriteRenderer>().enabled = false;
-            newBlock.transform.tag = "Points";
-        }
-        else
-        {
-            newBlock2.transform.GetComponent<Collider2D>().isTrigger = true;
-            newBlock2.GetComponent<SpriteRenderer>().enabled = false;
-            newBlock2.transform.tag = "Points";
-        }
+            Transform newBlock = Instantiate(block, new Vector2(obstacleSpawns[0].position.x, obstacleSpawns[0].position.y), Quaternion.identity);
+            Transform newBlock2 = Instantiate(block, new Vector2(obstacleSpawns[1].position.x, obstacleSpawns[1].position.y), Quaternion.identity);
 
-        // Only one of the two is a threat
-        newBlock.parent = GameObject.Find("ObstacleTrack1").transform;
-        newBlock2.parent = GameObject.Find("ObstacleTrack2").transform;
+            if (Random.Range(0, 10) < 5)
+            {
+                newBlock.transform.GetComponent<Collider2D>().isTrigger = true;
+                newBlock.GetComponent<SpriteRenderer>().enabled = false;
+                newBlock.transform.tag = "Points";
+            }
+            else
+            {
+                newBlock2.transform.GetComponent<Collider2D>().isTrigger = true;
+                newBlock2.GetComponent<SpriteRenderer>().enabled = false;
+                newBlock2.transform.tag = "Points";
+            }
+
+            // Only one of the two is a threat
+            newBlock.parent = GameObject.Find("ObstacleTrack1").transform;
+            newBlock2.parent = GameObject.Find("ObstacleTrack2").transform;
+
+        }
     }
 
     public void SwitchTrack()
@@ -153,7 +162,7 @@ public class Gamecontroller : MonoBehaviour {
         Debug.Log("Activating player");
         Transform player = GameObject.Find("Rider").transform;
         player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-        gameLive = true;
+        gameState = gameStates.playing;
     }
 
     void EndScene()
@@ -179,18 +188,33 @@ public class Gamecontroller : MonoBehaviour {
         Transform target = GameObject.Find("Ring").transform;
         Sequence mySequence = DOTween.Sequence();
 
-        mySequence.Append(target.DOScale(0.5f, 0.4f));
-        mySequence.Append(target.DOScale(0.3f, 0.4f));
+        mySequence.Append(target.DOScale(0.5f, 0.3f));
+        mySequence.Append(target.DOScale(0.2f, 0.6f));
         mySequence.Append(target.DOScale(0.8f, 0.45f));
-        mySequence.Append(target.DOScale(0.6f, 0.35f));
-        mySequence.Append(target.DOScale(1.2f, 0.5f));
-        mySequence.Append(target.DOScale(0.6f, 0.4f));
-        mySequence.Append(target.DOScale(1f, 0.8f)).OnComplete(PlayerActivate);
+        mySequence.Append(target.DOScale(0.65f, 0.35f));
+        mySequence.Append(target.DOScale(1.15f, 0.4f));
+        mySequence.Append(target.DOScale(0.8f, 0.5f));
+        mySequence.Append(target.DOScale(1f, 0.9f)).OnComplete(PlayerActivate);
 
         Transform rider = GameObject.Find("Rider").transform;
         Sequence riderSeq = DOTween.Sequence();
         riderSeq.Append(rider.DOScale(1f, 2.6f));
 
+    }
+
+    public void ColourTransition()
+    {
+        // Pick a random colour and transition to it gradually
+        Color newColor = backgroundColors[Random.Range(0, backgroundColors.Length)];
+        Debug.Log("Color switch");
+       // Sequence s = DOTween.Sequence();
+        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOColor(newColor, 7);
+        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOFade(255,7);
+    }
+
+    public void SetState(gameStates gs)
+    {
+        gameState = gs;
     }
 
 }
