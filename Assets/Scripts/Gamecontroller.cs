@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-
+using UnityEngine.Advertisements;
 
 public class Gamecontroller : MonoBehaviour {
     public Transform[] playTracks = new Transform[2];
@@ -12,21 +12,34 @@ public class Gamecontroller : MonoBehaviour {
     public Transform rider;
     float switchCooldown = 0.07f;
     public Transform block;
+    public Transform bonus;
     private float counter = 1.0f;
     bool gameLive = false;
+    int adFrequency = 5;
 
-    public enum gameStates { playing, paused, transition };
-    gameStates gameState = gameStates.transition;
+    public enum gameStates { playing, paused, transition, starting };
+    gameStates gameState = gameStates.starting;
 
     // Use this for initialization
     void Start() {
-        InitialiseScene();
         ColourTransition();
+        Advertisement.Initialize("1696406");
     }
 
     // Update is called once per frame
     void Update() {
-                
+
+        if (gameState == gameStates.starting)
+        {
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            {
+                InitialiseScene();
+                GameObject.Find("StartTrigger").GetComponent<Movement>().enabled = true;
+                gameState = gameStates.transition;
+            }
+
+
+        }
         if (gameState == gameStates.playing)
         {
 
@@ -49,7 +62,21 @@ public class Gamecontroller : MonoBehaviour {
             if (counter < 0)
             {
                 counter = Random.Range(1f, 2.5f);
-                SpawnBlock();
+                if (GameObject.Find("Rider").GetComponent<Player>().lapCounter > 1)
+                {
+                    if (Random.Range(0f, 1f) > 0.5f)
+                    {
+                        SpawnBonus();
+                    }
+                    else
+                    {
+                        SpawnBlock();
+                    }
+                }
+                else
+                {
+                    SpawnBlock();
+                }
             }
         }
         switchCooldown -= Time.deltaTime;
@@ -123,7 +150,33 @@ public class Gamecontroller : MonoBehaviour {
 
         }
     }
+    void SpawnBonus()
+    {
+        // Only spawn when playing
+        if (gameState == gameStates.playing)
+        {
+            // Check if close to existing block
 
+            bool tooClose = false;
+            tooClose = CheckSpawnProximity();
+            if (tooClose)
+            {
+                // If too close, reset the timer
+                return;
+            }
+
+
+            int i = 0;
+            if(Random.Range(0f,1f)>0.5f)
+            {
+                i = 1;
+            }
+            Transform newBonus = Instantiate(bonus, new Vector2(obstacleSpawns[i].position.x, obstacleSpawns[i].position.y), Quaternion.identity);
+            // Only one of the two is a threat
+            newBonus.parent = GameObject.Find("ObstacleTrack" + (i+1).ToString()).transform;
+
+        }
+    }
     public void SwitchTrack()
     {
         Debug.Log("Switching track!");
@@ -192,7 +245,7 @@ public class Gamecontroller : MonoBehaviour {
         mySequence.Append(target.DOScale(0.2f, 0.6f));
         mySequence.Append(target.DOScale(0.8f, 0.45f));
         mySequence.Append(target.DOScale(0.65f, 0.35f));
-        mySequence.Append(target.DOScale(1.15f, 0.4f));
+        mySequence.Append(target.DOScale(1.25f, 0.5f));
         mySequence.Append(target.DOScale(0.8f, 0.5f));
         mySequence.Append(target.DOScale(1f, 0.9f)).OnComplete(PlayerActivate);
 
@@ -215,6 +268,43 @@ public class Gamecontroller : MonoBehaviour {
     public void SetState(gameStates gs)
     {
         gameState = gs;
+    }
+
+    public void Ending()
+    {
+        Transform target = GameObject.Find("Ring").transform;
+        Sequence seq = DOTween.Sequence();
+        seq.Append(target.DOScale(0.25f, 4f));
+        GameObject[] leftoverObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        foreach(GameObject g in leftoverObstacles)
+        {
+            Destroy(g);
+        }
+
+
+        StartCoroutine(WaitEnd());
+    }
+    public IEnumerator WaitEnd()
+    {
+        while (true)
+        {
+            GameObject.Find("- GameStats").GetComponent<st>().gamePlays++;
+            Debug.Log("Game plays: " + GameObject.Find("- GameStats").GetComponent<st>().gamePlays.ToString());
+            if (GameObject.Find("- GameStats").GetComponent<st>().gamePlays % adFrequency == 0)
+            {
+                // Show ad
+                Debug.Log("Showing advertisment");
+                Advertisement.Show();
+                yield return new WaitForSeconds(4.2f);
+
+            } else
+            {
+                yield return new WaitForSeconds(4.2f);
+            }
+
+
+            Application.LoadLevel(0);
+        }
     }
 
 }

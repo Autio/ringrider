@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public class Player : MonoBehaviour {
-    int lapCounter = 0;
+    public int lapCounter = 0;
     int points = 0;
     float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
     // Use this for initialization
@@ -55,7 +55,7 @@ public class Player : MonoBehaviour {
 
         // Reset scene after a delay
 
-        StartCoroutine(WaitEnd());
+        GameObject.Find("- GameController").GetComponent<Gamecontroller>().Ending();
     }
 
     void Points()
@@ -65,14 +65,6 @@ public class Player : MonoBehaviour {
 //        GameObject.Find("PointsText").GetComponent<Text>().text = "Points: " + points.ToString();
     }
 
-    private IEnumerator WaitEnd()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(5.2f);
-            Application.LoadLevel(0);
-        }
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -106,6 +98,11 @@ public class Player : MonoBehaviour {
         {
             Points();
         }
+
+        if(collision.transform.tag == "Bonus")
+        {
+            PickUpBonus();
+        }
     }
 
 
@@ -118,6 +115,21 @@ public class Player : MonoBehaviour {
         seq.Append(t.transform.DOScale(1.1f, 0.2f));
         seq.Append(t.transform.DOScale(0.9f, 0.2f));
         seq.Append(t.transform.DOScale(1.0f, 0.2f));
+
+    }
+
+    private void PickUpBonus()
+    {
+        // Bonus 1 
+        // Destroy bonus object
+
+        // Slow yourself down
+
+        // Get a multiplier
+
+        // Bonus 2
+        // Bigger multiplier
+        // Reverse direction
 
     }
 }
