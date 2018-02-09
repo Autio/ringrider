@@ -29,7 +29,7 @@ public class Block : MonoBehaviour {
         seq.Append(this.transform.DOScale(0.7f / adjustment, 0.5f));
        // seq.Append(this.transform.DOScale(1.1f / adjustment, 0.3f));
        // seq.Append(this.transform.DOScale(0.6f / adjustment, 0.5f));
-        seq.Append(this.transform.DOScale(1.2f / adjustment, 1f));
+        seq.Append(this.transform.DOScale(1.5f / adjustment, 1f));
 
         // Disappearance
         seq.Append(this.transform.DOScale(0.4f / adjustment, time));

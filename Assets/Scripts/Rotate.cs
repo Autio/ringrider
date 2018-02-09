@@ -26,4 +26,9 @@ public class Rotate : MonoBehaviour {
             }
         }
 	}
+
+    public void FlipDir()
+    {
+        dir = !dir;
+    }
 }

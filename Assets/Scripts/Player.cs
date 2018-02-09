@@ -7,6 +7,8 @@ using DG.Tweening;
 public class Player : MonoBehaviour {
     public int lapCounter = 0;
     int points = 0;
+    int scoreMultiplier = 1;
+
     float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
     // Use this for initialization
     void Start () {
@@ -15,7 +17,10 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		
+		if(GameObject.Find("- GameController").GetComponent<Gamecontroller>().gameState == Gamecontroller.gameStates.starting)
+        {
+            // pulsate
+        }
 	}
 
     void DoLap()
@@ -30,6 +35,8 @@ public class Player : MonoBehaviour {
         UpdateText(GameObject.Find("LapText").GetComponent<Text>(), lapCounter.ToString());
 
     }
+
+
 
     void GameOver()
     {
@@ -101,7 +108,7 @@ public class Player : MonoBehaviour {
 
         if(collision.transform.tag == "Bonus")
         {
-            PickUpBonus();
+            PickUpBonus(collision);
         }
     }
 
@@ -118,18 +125,36 @@ public class Player : MonoBehaviour {
 
     }
 
-    private void PickUpBonus()
+    private IEnumerator JuicyFlip()
+    {
+        GameObject.Find("ObstacleTracks").GetComponent<Rotate>().FlipDir();
+        GameObject.Find("PlayTracks").GetComponent<Rotate>().FlipDir();
+        yield return new WaitForSeconds(0.04f);
+        GameObject.Find("ObstacleTracks").GetComponent<Rotate>().FlipDir();
+        GameObject.Find("PlayTracks").GetComponent<Rotate>().FlipDir();
+        yield return new WaitForSeconds(0.04f);
+        GameObject.Find("ObstacleTracks").GetComponent<Rotate>().FlipDir();
+        GameObject.Find("PlayTracks").GetComponent<Rotate>().FlipDir();
+        yield return new WaitForSeconds(0.02f);
+
+    }
+
+    private void PickUpBonus(Collider2D collision)
     {
         // Bonus 1 
         // Destroy bonus object
+        Destroy(collision.gameObject);
+        StartCoroutine(JuicyFlip());
+
+        // Reverse direction
+        // Get a multiplier
+
 
         // Slow yourself down
 
-        // Get a multiplier
 
         // Bonus 2
         // Bigger multiplier
-        // Reverse direction
 
     }
 }

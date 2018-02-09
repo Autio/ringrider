@@ -16,9 +16,9 @@ public class Gamecontroller : MonoBehaviour {
     private float counter = 1.0f;
     bool gameLive = false;
     int adFrequency = 5;
-
+   
     public enum gameStates { playing, paused, transition, starting };
-    gameStates gameState = gameStates.starting;
+    public gameStates gameState = gameStates.starting;
 
     // Use this for initialization
     void Start() {
@@ -95,7 +95,7 @@ public class Gamecontroller : MonoBehaviour {
 
     bool CheckSpawnProximity()
     {
-        Collider2D[] c = Physics2D.OverlapCircleAll(obstacleSpawns[0].transform.position, 0.75f);
+        Collider2D[] c = Physics2D.OverlapCircleAll(obstacleSpawns[0].transform.position, 0.95f);
         try
         {
             foreach(Collider2D cd in c)
@@ -209,10 +209,11 @@ public class Gamecontroller : MonoBehaviour {
     }
 
 
-    void PlayerActivate()
+    private IEnumerator PlayerActivate()
     {
         // Enable the player to drop
         Debug.Log("Activating player");
+        yield return new WaitForSeconds(2.7f);
         Transform player = GameObject.Find("Rider").transform;
         player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         gameState = gameStates.playing;
@@ -247,8 +248,10 @@ public class Gamecontroller : MonoBehaviour {
         mySequence.Append(target.DOScale(0.65f, 0.35f));
         mySequence.Append(target.DOScale(1.25f, 0.5f));
         mySequence.Append(target.DOScale(0.8f, 0.5f));
-        mySequence.Append(target.DOScale(1f, 0.9f)).OnComplete(PlayerActivate);
+        mySequence.Append(target.DOScale(1f, 0.9f));
 
+        StartCoroutine(PlayerActivate());
+            
         Transform rider = GameObject.Find("Rider").transform;
         Sequence riderSeq = DOTween.Sequence();
         riderSeq.Append(rider.DOScale(1f, 2.6f));
