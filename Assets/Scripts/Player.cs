@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		if(GameObject.Find("- GameController").GetComponent<Gamecontroller>().gameState == Gamecontroller.gameStates.starting)
+		if(GameController.Instance.gameState == GameController.gameStates.starting)
         {
             // pulsate
         }
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour {
         GameObject.Find("ObstacleTracks").GetComponent<Rotate>().active = false;
 
         // Set gamestate to transition
-        GameObject.Find("- GameController").GetComponent<Gamecontroller>().SetState(Gamecontroller.gameStates.transition);
+        GameController.Instance.SetState(GameController.gameStates.transition);
 
 
         // Juice
@@ -61,8 +61,7 @@ public class Player : MonoBehaviour {
         this.transform.DOMove(new Vector3(0, 0, 0), 3.2f);
 
         // Reset scene after a delay
-
-        GameObject.Find("- GameController").GetComponent<Gamecontroller>().Ending();
+        GameController.Instance.Ending();
     }
 
     void Points()
@@ -84,7 +83,7 @@ public class Player : MonoBehaviour {
             // Activate rotation
             GameObject.Find("PlayTracks").GetComponent<Rotate>().active = true;
 
-            GameObject.Find("- GameController").GetComponent<Gamecontroller>().InitTrack();
+            GameController.Instance.InitTrack();
 
 
         }

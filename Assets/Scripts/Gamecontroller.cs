@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Advertisements;
 
-public class Gamecontroller : MonoBehaviour {
+public class GameController : Singleton<GameController> {
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
     public Transform[] obstacleSpawns = new Transform[2];
