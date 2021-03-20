@@ -4,6 +4,16 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Advertisements;
 
+// TODO:
+// Creation of new rings
+// Ability to hop on to new rings
+// Move camera to new ring
+// Colour change old ring
+// Death counter in the middle of the ring
+// Sound effect on hopping
+// Sound effect on coin collection
+// Sound effect on death
+
 public class GameController : Singleton<GameController> {
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
@@ -29,6 +39,7 @@ public class GameController : Singleton<GameController> {
     // Update is called once per frame
     void Update() {
 
+        // TODO: Refactor to new input system
         if (gameState == gameStates.starting)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
@@ -85,6 +96,9 @@ public class GameController : Singleton<GameController> {
 
     void InitialiseScene()
     {
+        // Start moving the player
+        
+
         // Run juicy initialisation animations
         InitRing();
         // Activate player so they drop
@@ -239,22 +253,22 @@ public class GameController : Singleton<GameController> {
 
     public void InitRing()
     {
-        Transform target = GameObject.Find("Ring").transform;
-        Sequence mySequence = DOTween.Sequence();
+        // Transform target = GameObject.Find("Ring").transform;
+        // Sequence mySequence = DOTween.Sequence();
 
-        mySequence.Append(target.DOScale(0.5f, 0.3f));
-        mySequence.Append(target.DOScale(0.2f, 0.6f));
-        mySequence.Append(target.DOScale(0.8f, 0.45f));
-        mySequence.Append(target.DOScale(0.65f, 0.35f));
-        mySequence.Append(target.DOScale(1.25f, 0.5f));
-        mySequence.Append(target.DOScale(0.8f, 0.5f));
-        mySequence.Append(target.DOScale(1f, 0.9f));
+        // mySequence.Append(target.DOScale(0.5f, 0.3f));
+        // mySequence.Append(target.DOScale(0.2f, 0.6f));
+        // mySequence.Append(target.DOScale(0.8f, 0.45f));
+        // mySequence.Append(target.DOScale(0.65f, 0.35f));
+        // mySequence.Append(target.DOScale(1.25f, 0.5f));
+        // mySequence.Append(target.DOScale(0.8f, 0.5f));
+        // mySequence.Append(target.DOScale(1f, 0.9f));
 
-        StartCoroutine(PlayerActivate());
+        // StartCoroutine(PlayerActivate());
             
-        Transform rider = GameObject.Find("Rider").transform;
-        Sequence riderSeq = DOTween.Sequence();
-        riderSeq.Append(rider.DOScale(1f, 2.6f));
+        // Transform rider = GameObject.Find("Rider").transform;
+        // Sequence riderSeq = DOTween.Sequence();
+        // riderSeq.Append(rider.DOScale(1f, 2.6f));
 
     }
 
