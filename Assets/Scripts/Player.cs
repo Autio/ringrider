@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
     // The ring the player is currently in
     public GameObject activeRing;
     public GameObject targetRing;
+    bool onInnerTrack = true; // vs outer track
     int points = 0;
     int scoreMultiplier = 1;
     float ticker = 0.2f;
@@ -31,9 +32,19 @@ public class Player : MonoBehaviour {
         // If at a switching point, allow switching
         if(ableToHopRings && hopCoolDown < 0)
         {
-            hopCoolDown = 0.2f;
+            hopCoolDown = 0.15f;
             HopToRing(targetRing);
+        } else if (hopCoolDown < 0)
+        {
+            // Hop to the other track
+            HopTracks(onInnerTrack);
+            
         }
+
+    }
+
+    public void HopTracks(bool onInnerTrack)
+    {
 
     }
 
@@ -52,7 +63,12 @@ public class Player : MonoBehaviour {
         oldInnerTrack.GetComponent<Rotate>().enabled = false;
 
         innerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
-        innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed;
+
+        // How do we set speed appropriately?
+        float radiusRatio = activeRing.GetComponent<Ring>().radius / targetRing.GetComponent<Ring>().radius;
+        Debug.Log("Radius ratio: " + radiusRatio);
+        innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
+
         
         innerTrack.GetComponent<Rotate>().active = true;
         innerTrack.GetComponent<Rotate>().enabled = true;
