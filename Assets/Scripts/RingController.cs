@@ -28,28 +28,44 @@ public class RingController : MonoBehaviour
         Vector2 previousSpawnPos = new Vector2(0,0);
         float radius = 2f;
         float previousRadius = 0f;
-    
+        float angle = 0;
+        int s_layerMask = LayerMask.GetMask("Ring"); 
+
         Vector3 spawnPos = new Vector2(0,0);
         for (int i = 0; i < rings; i++)
         {
             previousSpawnPos = spawnPos;
             previousRadius = radius;
-            radius = Random.Range(minRingRadius, maxRingRadius);
-            // xPosition of the centre of thew new circle is 
-            // a point on the existing circumference plus 
-            // a vector in that direction, magnitude new radius
-            float angle = Random.Range(0, 3.14f);
-            float xPos = previousSpawnPos.x + (previousRadius + ringWidth + radius) * Mathf.Cos(angle);
-            float yPos = previousSpawnPos.y + (previousRadius + ringWidth + radius) * Mathf.Sin(angle);
-            
-            spawnPos = new Vector2(xPos, yPos);
-            
+            bool overlaps = true;
+            float xPos = 0;
+            float yPos = 0;
             GameObject newRing = Instantiate(ringPrefab, spawnPos, Quaternion.identity);
+
+            while (overlaps)
+            {
+                angle = Random.Range(0, 3.14f);
+                radius = Random.Range(minRingRadius, maxRingRadius);
+                xPos = previousSpawnPos.x + (previousRadius + ringWidth + radius) * Mathf.Cos(angle);
+                yPos = previousSpawnPos.y + (previousRadius + ringWidth + radius) * Mathf.Sin(angle);
+                spawnPos = new Vector2(xPos, yPos);
+                newRing.transform.position = spawnPos;
+
+                // Make sure the new circle doesn't overlap old ones
+                var olap = Physics2D.OverlapCircleAll(spawnPos, radius, s_layerMask);
+                if (olap.Length <= 1)
+                {
+                    overlaps = false;
+                }
+            }
+            
             // Set the initial conditions of the ring appropriately.
             newRing.GetComponent<Ring>().radius = radius;
+            newRing.GetComponent<CircleCollider2D>().radius = radius;
             newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth);
             // Add the ring to the list
             Rings.Add(newRing);
+
+            // TODO: Add triggers for the tangent point
         }
     }
 
