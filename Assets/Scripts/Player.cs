@@ -208,9 +208,18 @@ public class Player : MonoBehaviour {
     {
         if(collision.gameObject.layer == 7)
         {
-            Debug.Log("Hit da trigger");
             ableToHopRings = true;
             targetRing = collision.transform.parent.gameObject;
+        }
+
+        // Grab a coin
+        if(collision.gameObject.layer == 8)
+        {
+            Debug.Log("Coin!");
+            GameController.Instance.coins++;
+            
+            Destroy(collision.gameObject);
+            // TODO: Play effect
         }
 
         if(collision.transform.name == "StartTrigger")

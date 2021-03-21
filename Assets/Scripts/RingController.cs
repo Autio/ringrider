@@ -7,6 +7,7 @@ public class RingController : MonoBehaviour
     // Manage the standard level of rings
     List<GameObject> Rings = new List<GameObject>();
     public GameObject ringPrefab;
+    public GameObject coinPrefab;
     // Start is called before the first frame update
     void Start()
     {
@@ -65,7 +66,6 @@ public class RingController : MonoBehaviour
             }
             
 
-
             // Set the initial conditions of the ring appropriately.
             newRing.GetComponent<Ring>().radius = radius;
             newRing.GetComponent<CircleCollider2D>().radius = radius;
@@ -81,10 +81,70 @@ public class RingController : MonoBehaviour
             triggerObject.transform.name = "Trigger";
             triggerObject.transform.position = new Vector2(intersectionX, intersectionY);
             triggerObject.transform.parent = newRing.transform;
+
+            // Create some coins for the ring
+            CreateCoins(newRing, radius);
+
             // Add the ring to the list
             Rings.Add(newRing);
             
         }
+
+    }
+
+    void CreateCoins(GameObject newRing, float radius)
+    {
+        float innerRadius = radius - 0.14f;
+        // Random amounts, but in sequence
+        // Has to be aware of the size of the ring
+
+        // Just create shit on the circumference
+        // Radians for each te[]
+        // .6f = approximate arc length of the coin
+        float angle = .314f / radius;
+        
+        for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
+        {
+            GameObject coin = Instantiate(coinPrefab, 
+            new Vector3(newRing.transform.position.x + Mathf.Cos(i) * innerRadius, 
+            newRing.transform.position.y + Mathf.Sin(i) * innerRadius, 0), 
+            Quaternion.identity) as GameObject;   
+        }
+
+        // How many sequences of coins will there be?
+        int seq = 0;
+        if(radius > 1)
+        {
+            seq = Random.Range(0,4);
+        }
+        else 
+        {
+            seq = Random.Range(0,2);
+        }
+        // How long can the sequences be? 
+        int maxLength = 0;
+        if(radius > 1)
+        {
+            maxLength = 8;
+        } else 
+        {
+            maxLength = 4;
+        }
+        for (int i = 0; i < seq; i++)
+        {
+            for (int j = 0; j < Random.Range(maxLength / 2, maxLength + 1); j++)
+            {
+                
+            }
+        }
+
+        // float angle = i * Mathf.PI*2f / nodeCount;
+        // Vector3 newPos = new Vector3(Mathf.Cos(angle)*radius, Mathf.Sin(angle)*radius, 0);
+        // GameObject newNode = Instantiate(button, transform.position + newPos, Quaternion.identity);
+        // newNode.transform.parent = GameObject.Find("NodeCanvas").transform;
+        // newNode.GetComponent<RectTransform>().localPosition = new Vector2(newPos.x, newPos.y + yOffset);
+
+
 
     }
 

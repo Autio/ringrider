@@ -27,6 +27,7 @@ public class GameController : Singleton<GameController> {
     private float counter = 1.0f;
     bool gameLive = false;
     int adFrequency = 5;
+    public int coins;
    
     public enum gameStates { playing, paused, transition, starting };
     public gameStates gameState = gameStates.starting;
