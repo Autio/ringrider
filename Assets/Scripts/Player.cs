@@ -6,17 +6,78 @@ using DG.Tweening;
 
 public class Player : MonoBehaviour {
     public int lapCounter = 0;
+    // The ring the player is currently in
+    public GameObject activeRing;
+    public GameObject targetRing;
     int points = 0;
     int scoreMultiplier = 1;
-
+    float ticker = 0.2f;
+    bool started = false;
+    bool ableToHopRings = false;
+    float hopCoolDown = .05f;
     float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
     // Use this for initialization
     void Start () {
+        this.GetComponent<Rigidbody2D>().isKinematic = true;
+        this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
+        
         //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
+    }
+
+    public void Ride()
+    {
+        // If gamemode is playing
+
+        // If at a switching point, allow switching
+        if(ableToHopRings && hopCoolDown < 0)
+        {
+            hopCoolDown = 0.2f;
+            HopToRing(targetRing);
+        }
+
+    }
+
+    public void HopToRing(GameObject targetRing)
+    {
+        Debug.Log("hopping to new ring!");
+        // Move the player to the inner track of the target ring
+        // Use the trigger point and move then towards the centre of the new ring
+        Transform trigger = targetRing.transform.Find("Trigger");
+        transform.position = (trigger.position + ((targetRing.transform.position - trigger.position).normalized * .26f));
+        transform.parent = targetRing.transform.Find("Inner Track").transform;
+
+        // Stop rotating the old ring, start rotating the new one
+        Transform oldInnerTrack = activeRing.transform.Find("Inner Track");
+        Transform innerTrack = targetRing.transform.Find("Inner Track");
+        oldInnerTrack.GetComponent<Rotate>().enabled = false;
+
+        innerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
+        innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed;
+        
+        innerTrack.GetComponent<Rotate>().active = true;
+        innerTrack.GetComponent<Rotate>().enabled = true;
+        activeRing = targetRing;
+        CameraToNewRing(activeRing);
+    }
+
+    // Move the camera to center on the new ring
+    void CameraToNewRing(GameObject ring)
+    {
+        Camera.main.transform.position = new Vector3(ring.transform.position.x, ring.transform.position.y, Camera.main.transform.position.z);
     }
 
     // Update is called once per frame
     void Update () {
+        hopCoolDown -= Time.deltaTime;
+        ticker -= Time.deltaTime;
+        if(ticker < 0 && !started) 
+        {   
+            started = true;
+            transform.position = new Vector2(0, -1.69f);
+            activeRing = GameObject.Find("StartRing");
+            transform.parent = activeRing.transform.Find("Inner Track");
+            
+        }
 		if(GameController.Instance.gameState == GameController.gameStates.starting)
         {
             // pulsate
@@ -72,46 +133,6 @@ public class Player : MonoBehaviour {
     }
 
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.transform.name == "StartTrigger")
-        {
-            // The player has landed and should be parented to the inner circle
-            this.GetComponent<Rigidbody2D>().isKinematic = true;
-            this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
-
-            // Activate rotation
-            GameObject.Find("PlayTracks").GetComponent<Rotate>().active = true;
-
-            GameController.Instance.InitTrack();
-
-
-        }
-
-        if(collision.transform.tag == "Lap")
-        {
-            // Lap has been circumnavigated
-            DoLap();
-        }
-
-        if(collision.transform.tag == "Obstacle")
-        {
-            GameOver();
-        }
-
-
-        if (collision.transform.tag == "Points")
-        {
-            Points();
-        }
-
-        if(collision.transform.tag == "Bonus")
-        {
-            PickUpBonus(collision);
-        }
-    }
-
-
     private void UpdateText(Text t, string s)
     {
         t.text = s;
@@ -156,4 +177,60 @@ public class Player : MonoBehaviour {
         // Bigger multiplier
 
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer == 7)
+        {
+            Debug.Log("Left da trigger");
+            ableToHopRings = false;
+        }
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer == 7)
+        {
+            Debug.Log("Hit da trigger");
+            ableToHopRings = true;
+            targetRing = collision.transform.parent.gameObject;
+        }
+
+        if(collision.transform.name == "StartTrigger")
+        {
+            // The player has landed and should be parented to the inner circle
+
+
+            // Activate rotation
+            GameObject.Find("PlayTracks").GetComponent<Rotate>().active = true;
+
+            GameController.Instance.InitTrack();
+
+
+        }
+
+        if(collision.transform.tag == "Lap")
+        {
+            // Lap has been circumnavigated
+            DoLap();
+        }
+
+        if(collision.transform.tag == "Obstacle")
+        {
+            GameOver();
+        }
+
+
+        if (collision.transform.tag == "Points")
+        {
+            Points();
+        }
+
+        if(collision.transform.tag == "Bonus")
+        {
+            PickUpBonus(collision);
+        }
+    }
+
 }

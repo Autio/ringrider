@@ -11,7 +11,7 @@ public class RingController : MonoBehaviour
     void Start()
     {
         // Grab that start ring
-        BuildLevel(100,1,4);
+        BuildLevel(100,.8f,1.8f);
     }
     // Update is called once per frame
     void Update()
@@ -39,12 +39,18 @@ public class RingController : MonoBehaviour
             bool overlaps = true;
             float xPos = 0;
             float yPos = 0;
+            float intersectionX = 0;
+            float intersectionY = 0;
+
             GameObject newRing = Instantiate(ringPrefab, spawnPos, Quaternion.identity);
 
             while (overlaps)
             {
                 angle = Random.Range(0, 3.14f);
                 radius = Random.Range(minRingRadius, maxRingRadius);
+                intersectionX = previousSpawnPos.x + (previousRadius + ringWidth / 2) * Mathf.Cos(angle);
+                intersectionY = previousSpawnPos.y + (previousRadius + ringWidth / 2) * Mathf.Sin(angle);
+
                 xPos = previousSpawnPos.x + (previousRadius + ringWidth + radius) * Mathf.Cos(angle);
                 yPos = previousSpawnPos.y + (previousRadius + ringWidth + radius) * Mathf.Sin(angle);
                 spawnPos = new Vector2(xPos, yPos);
@@ -58,15 +64,28 @@ public class RingController : MonoBehaviour
                 }
             }
             
+
+
             // Set the initial conditions of the ring appropriately.
             newRing.GetComponent<Ring>().radius = radius;
             newRing.GetComponent<CircleCollider2D>().radius = radius;
             newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth);
+
+            // Create the trigger which the player can hit to switch here
+            GameObject triggerObject = new GameObject();
+            triggerObject.AddComponent<CircleCollider2D>();
+            // Size of the area where a player can hop between rings
+            triggerObject.GetComponent<CircleCollider2D>().radius = 0.33f; 
+            triggerObject.GetComponent<CircleCollider2D>().isTrigger = true;
+            triggerObject.layer = 7;
+            triggerObject.transform.name = "Trigger";
+            triggerObject.transform.position = new Vector2(intersectionX, intersectionY);
+            triggerObject.transform.parent = newRing.transform;
             // Add the ring to the list
             Rings.Add(newRing);
-
-            // TODO: Add triggers for the tangent point
+            
         }
+
     }
 
 }

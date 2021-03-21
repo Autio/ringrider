@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 using UnityEngine.Advertisements;
 
@@ -36,60 +37,71 @@ public class GameController : Singleton<GameController> {
         Advertisement.Initialize("1696406");
     }
 
+    // Input
+    public void Ride()
+    {
+        Debug.Log("Ride");
+    }
+    
+    
+
     // Update is called once per frame
     void Update() {
 
-        // TODO: Refactor to new input system
-        if (gameState == gameStates.starting)
-        {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
-            {
-                InitialiseScene();
-                GameObject.Find("StartTrigger").GetComponent<Movement>().enabled = true;
-                gameState = gameStates.transition;
-            }
+
+        // // TODO: Refactor to new input system
+        // if (gameState == gameStates.starting)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        //     {
+        //         InitialiseScene();
+        //         GameObject.Find("StartTrigger").GetComponent<Movement>().enabled = true;
+        //         gameState = gameStates.transition;
+        //     }
 
 
-        }
-        if (gameState == gameStates.playing)
-        {
+        // }
+        // if (gameState == gameStates.playing)
+        // {
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (switchCooldown < 0)
-                {
-                    SwitchTrack();
-                }
-            }
+        //     if (Input.GetKeyDown(KeyCode.Space))
+        //     {
+        //         if (switchCooldown < 0)
+        //         {
+        //             SwitchTrack();
+        //         }
+        //     }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (switchCooldown < 0)
-                {
-                    SwitchTrack();
-                }
-            }
-            counter -= Time.deltaTime;
-            if (counter < 0)
-            {
-                counter = Random.Range(1f, 2.5f);
-                if (GameObject.Find("Rider").GetComponent<Player>().lapCounter > 1)
-                {
-                    if (Random.Range(0f, 1f) > 0.5f)
-                    {
-                        SpawnBonus();
-                    }
-                    else
-                    {
-                        SpawnBlock();
-                    }
-                }
-                else
-                {
-                    SpawnBlock();
-                }
-            }
-        }
+        //     if (Input.GetMouseButtonDown(0))
+        //     {
+        //         if (switchCooldown < 0)
+        //         {
+        //             SwitchTrack();
+        //         }
+        //     }
+
+            // Spawning of enemies
+        //     counter -= Time.deltaTime;
+        //     if (counter < 0)
+        //     {
+        //         counter = Random.Range(1f, 2.5f);
+        //         if (GameObject.Find("Rider").GetComponent<Player>().lapCounter > 1)
+        //         {
+        //             if (Random.Range(0f, 1f) > 0.5f)
+        //             {
+        //                 SpawnBonus();
+        //             }
+        //             else
+        //             {
+        //                 SpawnBlock();
+        //             }
+        //         }
+        //         else
+        //         {
+        //             SpawnBlock();
+        //         }
+        //     }
+        // }
         switchCooldown -= Time.deltaTime;
 
     }
@@ -100,7 +112,7 @@ public class GameController : Singleton<GameController> {
         
 
         // Run juicy initialisation animations
-        InitRing();
+        // InitRing();
         // Activate player so they drop
         // Then deactivate their gravity
 
@@ -319,8 +331,8 @@ public class GameController : Singleton<GameController> {
                 yield return new WaitForSeconds(4.2f);
             }
 
-
-            Application.LoadLevel(0);
+        // Reset level
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
