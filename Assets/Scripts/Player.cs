@@ -120,7 +120,7 @@ public class Player : MonoBehaviour {
         if(ticker < 0 && !started) 
         {   
             started = true;
-            transform.position = new Vector2(0, -1.69f);
+            transform.position = new Vector2(0, -GameObject.Find("StartRing").GetComponent<Ring>().radius + 0.18f);
             activeRing = GameObject.Find("StartRing");
             transform.parent = activeRing.transform.Find("Inner Track");
             
