@@ -94,7 +94,9 @@ public class RingController : MonoBehaviour
 
     void CreateCoins(GameObject newRing, float radius)
     {
+        // Assuming a static ring width here
         float innerRadius = radius - 0.14f;
+        float outerRadius = radius + .14f; 
         // Random amounts, but in sequence
         // Has to be aware of the size of the ring
 
@@ -110,6 +112,20 @@ public class RingController : MonoBehaviour
             newRing.transform.position.y + Mathf.Sin(i) * innerRadius, 0), 
             Quaternion.identity) as GameObject;   
         }
+
+        for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
+        {
+            GameObject coin = Instantiate(coinPrefab, 
+            new Vector3(newRing.transform.position.x + Mathf.Cos(i) * outerRadius, 
+            newRing.transform.position.y + Mathf.Sin(i) * outerRadius, 0), 
+            Quaternion.identity) as GameObject;   
+        }
+
+        // TODO: Sequence of inner and outer coins
+
+        // TODO: Create occasional enemies
+
+        // TODO: Increase speeds
 
         // How many sequences of coins will there be?
         int seq = 0;

@@ -1,10 +1,13 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Cinemachine;
 
 public class Player : MonoBehaviour {
+
+    public GameObject cinemachine;
     public int lapCounter = 0;
     // The ring the player is currently in
     public GameObject activeRing;
@@ -45,7 +48,16 @@ public class Player : MonoBehaviour {
 
     public void HopTracks(bool onInnerTrack)
     {
-
+        // Amount needed to jump across the circle width
+        float offset = .14f;
+        if(onInnerTrack)
+        {
+            // Hop to the outer track
+        }
+        else 
+        {
+            // Hop to the inner track of the circle
+        }
     }
 
     public void HopToRing(GameObject targetRing)
@@ -56,6 +68,8 @@ public class Player : MonoBehaviour {
         Transform trigger = targetRing.transform.Find("Trigger");
         transform.position = (trigger.position + ((targetRing.transform.position - trigger.position).normalized * .26f));
         transform.parent = targetRing.transform.Find("Inner Track").transform;
+        // Deactivate the trigger!
+        trigger.gameObject.SetActive(false);
 
         // Stop rotating the old ring, start rotating the new one
         Transform oldInnerTrack = activeRing.transform.Find("Inner Track");
@@ -79,7 +93,13 @@ public class Player : MonoBehaviour {
     // Move the camera to center on the new ring
     void CameraToNewRing(GameObject ring)
     {
-        Camera.main.transform.position = new Vector3(ring.transform.position.x, ring.transform.position.y, Camera.main.transform.position.z);
+        Debug.Log(ring);
+
+        var vcam = cinemachine.GetComponent<CinemachineVirtualCamera>();
+        Debug.Log("vpos" + vcam.transform.position);
+        vcam.LookAt = ring.transform;
+        vcam.Follow = ring.transform;
+       // Camera.main.transform.position = new Vector3(ring.transform.position.x, ring.transform.position.y, Camera.main.transform.position.z);
     }
 
     // Update is called once per frame
@@ -211,6 +231,7 @@ public class Player : MonoBehaviour {
             ableToHopRings = true;
             targetRing = collision.transform.parent.gameObject;
         }
+
 
         // Grab a coin
         if(collision.gameObject.layer == 8)
