@@ -33,40 +33,51 @@ public class Player : MonoBehaviour {
         // If gamemode is playing
 
         // If at a switching point, allow switching
-        if(ableToHopRings && hopCoolDown < 0)
+        if(onInnerTrack && ableToHopRings && hopCoolDown < 0)
         {
             hopCoolDown = 0.15f;
             HopToRing(targetRing);
         } else if (hopCoolDown < 0)
         {
             // Hop to the other track
-            HopTracks(onInnerTrack);
+            hopCoolDown = 0.15f;
+            HopTracks();
             
         }
 
     }
 
-    public void HopTracks(bool onInnerTrack)
+    public void HopTracks()
     {
         // Amount needed to jump across the circle width
-        float offset = .14f;
+        float offset = .28f;
         if(onInnerTrack)
         {
+            float radiusRatio = (activeRing.GetComponent<Ring>().radius + offset) / activeRing.GetComponent<Ring>().radius;
+            Debug.Log(radiusRatio + " should be larger than " + activeRing.GetComponent<Ring>().radius);
+            activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed / radiusRatio;
+           
             // Hop to the outer track
+            transform.position = transform.position + (transform.position - activeRing.transform.position).normalized * offset;
+            onInnerTrack = false;
         }
         else 
         {
+            float radiusRatio = (activeRing.GetComponent<Ring>().radius + offset) / activeRing.GetComponent<Ring>().radius;
+            activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
+            Debug.Log(radiusRatio + " should be smaller than " + activeRing.GetComponent<Ring>().radius);
             // Hop to the inner track of the circle
+            transform.position = transform.position - (transform.position - activeRing.transform.position).normalized * offset;
+            onInnerTrack = true;
         }
     }
 
     public void HopToRing(GameObject targetRing)
     {
-        Debug.Log("hopping to new ring!");
         // Move the player to the inner track of the target ring
         // Use the trigger point and move then towards the centre of the new ring
         Transform trigger = targetRing.transform.Find("Trigger");
-        transform.position = (trigger.position + ((targetRing.transform.position - trigger.position).normalized * .26f));
+        transform.position = (trigger.position + ((targetRing.transform.position - trigger.position).normalized * .18f));
         transform.parent = targetRing.transform.Find("Inner Track").transform;
         // Deactivate the trigger!
         trigger.gameObject.SetActive(false);
