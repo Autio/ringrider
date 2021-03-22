@@ -237,6 +237,19 @@ public class Player : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        
+        // Hit a ring when you're riding outside
+        if(collision.gameObject.layer == 6)
+        {
+            if(!onInnerTrack)
+            {
+                Debug.Log("Game overrr");
+                Destroy(gameObject);
+            }
+        }
+
+
+        // Allowed to hop between rings
         if(collision.gameObject.layer == 7)
         {
             ableToHopRings = true;

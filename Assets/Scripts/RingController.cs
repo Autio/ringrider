@@ -111,6 +111,7 @@ public class RingController : MonoBehaviour
             new Vector3(newRing.transform.position.x + Mathf.Cos(i) * innerRadius, 
             newRing.transform.position.y + Mathf.Sin(i) * innerRadius, 0), 
             Quaternion.identity) as GameObject;   
+            coin.transform.parent = newRing.transform;
         }
 
         for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
@@ -119,6 +120,7 @@ public class RingController : MonoBehaviour
             new Vector3(newRing.transform.position.x + Mathf.Cos(i) * outerRadius, 
             newRing.transform.position.y + Mathf.Sin(i) * outerRadius, 0), 
             Quaternion.identity) as GameObject;   
+            coin.transform.parent = newRing.transform;
         }
 
         // TODO: Sequence of inner and outer coins
