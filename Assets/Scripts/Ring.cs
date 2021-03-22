@@ -33,11 +33,14 @@ public class Ring : MonoBehaviour
 
     }
 
-    public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth)
+    public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color)
     {
         lineRenderer.startWidth = startWidth;
         lineRenderer.endWidth = endWidth;
         lineRenderer.loop = true;
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
+
         float angle = 2 * Mathf.PI / vertexNumber;
         lineRenderer.positionCount = vertexNumber;
 

@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RingController : MonoBehaviour
+public class RingController : Singleton<GameController>
 {
     // Manage the standard level of rings
     List<GameObject> Rings = new List<GameObject>();
     public GameObject ringPrefab;
     public GameObject coinPrefab;
     public GameObject startRing;
+    public Color[] ringColours;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +32,7 @@ public class RingController : MonoBehaviour
         try{
             ringHolder = GameObject.Find("Rings");
         } catch{
-            Debug.Log("Couldn't find Rings gameobjet to hold Rings in scene");
+            Debug.Log("Couldn't find Rings gameobject to hold Rings in scene");
         }
 
         float ringWidth = 0.07f; // To account for the width itself
@@ -42,7 +44,7 @@ public class RingController : MonoBehaviour
 
         // Draw the start ring
         startRing.GetComponent<CircleCollider2D>().radius = radius;
-        startRing.GetComponent<Ring>().DrawPolygon(60, radius, Vector2.zero, ringWidth, ringWidth);
+        startRing.GetComponent<Ring>().DrawPolygon(60, radius, Vector2.zero, ringWidth, ringWidth, ringColours[Random.Range(0,ringColours.Length)]);
 
         Vector3 spawnPos = new Vector2(0,0);
         for (int i = 0; i < rings; i++)
@@ -70,18 +72,19 @@ public class RingController : MonoBehaviour
                 newRing.transform.position = spawnPos;
 
                 // Make sure the new circle doesn't overlap old ones
-                var olap = Physics2D.OverlapCircleAll(spawnPos, radius, s_layerMask);
+                var olap = Physics2D.OverlapCircleAll(spawnPos, radius + 0.2f, s_layerMask);
                 if (olap.Length <= 1)
                 {
                     overlaps = false;
                 }
             }
             
-
             // Set the initial conditions of the ring appropriately.
             newRing.GetComponent<Ring>().radius = radius;
             newRing.GetComponent<CircleCollider2D>().radius = radius;
-            newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth);
+
+            newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth,  ringColours[Random.Range(0,ringColours.Length)]);
+            
             newRing.transform.parent = ringHolder.transform;
             // Create the trigger which the player can hit to switch here
             GameObject triggerObject = new GameObject();
