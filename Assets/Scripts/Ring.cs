@@ -38,6 +38,7 @@ public class Ring : MonoBehaviour
         lineRenderer.startWidth = startWidth;
         lineRenderer.endWidth = endWidth;
         lineRenderer.loop = true;
+        color.g += Random.Range(-.02f,.02f);
         lineRenderer.startColor = color;
         lineRenderer.endColor = color;
 

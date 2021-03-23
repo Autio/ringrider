@@ -291,8 +291,8 @@ public class GameController : Singleton<GameController> {
         Color newColor = backgroundColors[Random.Range(0, backgroundColors.Length)];
         Debug.Log("Color switch");
        // Sequence s = DOTween.Sequence();
-        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOColor(newColor, 7);
-        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOFade(255,7);
+//        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOColor(newColor, 7);
+   //     GameObject.Find("Background").GetComponent<SpriteRenderer>().DOFade(255,7);
     }
 
     public void SetState(gameStates gs)

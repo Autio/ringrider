@@ -72,7 +72,7 @@ public class RingController : Singleton<GameController>
                 newRing.transform.position = spawnPos;
 
                 // Make sure the new circle doesn't overlap old ones
-                var olap = Physics2D.OverlapCircleAll(spawnPos, radius + 0.2f, s_layerMask);
+                var olap = Physics2D.OverlapCircleAll(spawnPos, radius + 0.05f, s_layerMask);
                 if (olap.Length <= 1)
                 {
                     overlaps = false;
@@ -98,47 +98,69 @@ public class RingController : Singleton<GameController>
             triggerObject.transform.parent = newRing.transform;
 
             // Create some coins for the ring
-            CreateCoins(newRing, radius);
 
             // Add the ring to the list
             Rings.Add(newRing);
             
         }
 
+        // Now add rings
+        foreach(GameObject ring in Rings)
+        {
+            CreateCoins(ring, ring.transform.Find("Trigger").gameObject, ring.GetComponent<Ring>().radius);
+
+        }
+
     }
 
-    void CreateCoins(GameObject newRing, float radius)
+    void CreateCoins(GameObject newRing, GameObject triggerObject, float radius)
     {
+        // Pass the triggerobject to have a sense of where the player
+        // enters the ring
+        int r_layerMask = LayerMask.GetMask("Ring"); 
+        int c_layerMask = LayerMask.GetMask("Coin"); 
+        int mask = r_layerMask | c_layerMask;
+
+
+        float start = SignedAngleBetween(Vector2.right,  triggerObject.transform.position - newRing.transform.position, Vector3.forward) * Mathf.Deg2Rad;
         // Assuming a static ring width here
         float innerRadius = radius - 0.14f;
         float outerRadius = radius + .14f; 
         // Random amounts, but in sequence
         // Has to be aware of the size of the ring
 
-        // Just create shit on the circumference
-        // Radians for each te[]
-        // .6f = approximate arc length of the coin
         float angle = .314f / radius;
-        
-        for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
-        {
-            GameObject coin = Instantiate(coinPrefab, 
-            new Vector3(newRing.transform.position.x + Mathf.Cos(i) * innerRadius, 
-            newRing.transform.position.y + Mathf.Sin(i) * innerRadius, 0), 
-            Quaternion.identity) as GameObject;   
-            coin.transform.parent = newRing.transform;
-        }
 
-        for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
-        {
-            GameObject coin = Instantiate(coinPrefab, 
-            new Vector3(newRing.transform.position.x + Mathf.Cos(i) * outerRadius, 
-            newRing.transform.position.y + Mathf.Sin(i) * outerRadius, 0), 
-            Quaternion.identity) as GameObject;   
-            coin.transform.parent = newRing.transform;
-        }
+        // .6f = approximate arc length of the co
+        // .28f
+        // for (float i = start; i < start + Mathf.PI * 2 - 1f; i += angle * 2)
+        // {
+        //     GameObject coin = Instantiate(coinPrefab, 
+        //     new Vector3(newRing.transform.position.x + Mathf.Cos(i) * innerRadius, 
+        //     newRing.transform.position.y + Mathf.Sin(i) * innerRadius, 0), 
+        //     Quaternion.identity) as GameObject;   
+        //     coin.transform.parent = newRing.transform;
+        // }
+
+        // for (float i = 0; i < Mathf.PI * 2 -.28f; i += angle)
+        // {
+        //     GameObject coin = Instantiate(coinPrefab, 
+        //     new Vector3(newRing.transform.position.x + Mathf.Cos(i) * outerRadius, 
+        //     newRing.transform.position.y + Mathf.Sin(i) * outerRadius, 0), 
+        //     Quaternion.identity) as GameObject;   
+        //     coin.transform.parent = newRing.transform;
+        // }
 
         // TODO: Sequence of inner and outer coins
+        // Starting point should be a bit after the trigger        
+        int dir;
+        if(Random.Range(0,10) < 5)
+        {
+            dir = 1;
+        } else
+        {
+            dir = -1;
+        }
 
         // TODO: Create occasional enemies
 
@@ -148,26 +170,61 @@ public class RingController : Singleton<GameController>
         int seq = 0;
         if(radius > 1)
         {
-            seq = Random.Range(0,4);
+            seq = Random.Range(1,5);
         }
         else 
         {
-            seq = Random.Range(0,2);
+            seq = Random.Range(0,3);
         }
         // How long can the sequences be? 
         int maxLength = 0;
         if(radius > 1)
         {
-            maxLength = 8;
+            maxLength = 18;
         } else 
         {
-            maxLength = 4;
+            maxLength = 12;
         }
         for (int i = 0; i < seq; i++)
         {
-            for (int j = 0; j < Random.Range(maxLength / 2, maxLength + 1); j++)
+            int lengths = 0;
+            int sequenceLength = Random.Range(maxLength / 2, maxLength + 1);
+            lengths += sequenceLength;
+            bool inner = true;
+            if(Random.Range(0,10) < 4)
             {
-                
+                inner = false;
+            }
+
+            for (int j = 0; j < sequenceLength; j++)
+            {
+                GameObject coin;
+                float coinAngle = start + lengths * angle * dir + j * angle * dir;
+
+                if(inner) {
+                    coin = Instantiate(coinPrefab, 
+                    new Vector3(newRing.transform.position.x + Mathf.Cos(coinAngle) * innerRadius, 
+                    newRing.transform.position.y + Mathf.Sin(coinAngle) * innerRadius, 0), 
+                    Quaternion.identity) as GameObject;   
+                }
+                else {
+                    coin = Instantiate(coinPrefab, 
+                    new Vector3(newRing.transform.position.x + Mathf.Cos(coinAngle) * outerRadius, 
+                    newRing.transform.position.y + Mathf.Sin(coinAngle) * outerRadius, 0), 
+                    Quaternion.identity) as GameObject;   
+                }
+                coin.transform.parent = newRing.transform;
+                var overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.1f, mask).Length;
+                Debug.Log(overlaps);
+
+                if(overlaps > 1 && !inner) 
+                {
+                    Destroy(coin);
+                    i++;
+
+                } 
+                // If overlaps with a ring, end sequence
+
             }
         }
 
@@ -180,5 +237,19 @@ public class RingController : Singleton<GameController>
 
 
     }
+
+    float SignedAngleBetween(Vector3 a, Vector3 b, Vector3 n){
+    // angle in [0,180]
+    float angle = Vector3.Angle(a,b);
+    float sign = Mathf.Sign(Vector3.Dot(n,Vector3.Cross(a,b)));
+
+    // angle in [-179,180]
+    float signed_angle = angle * sign;
+
+    // angle in [0,360] (not used but included here for completeness)
+    //float angle360 =  (signed_angle + 180) % 360;
+
+    return signed_angle;
+}
 
 }
