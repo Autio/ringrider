@@ -15,7 +15,7 @@ public class RingController : Singleton<GameController>
     void Start()
     {
         // Grab that start ring
-        BuildLevel(100,.8f,1.8f, startRing);
+        BuildLevel(100,.6f,1.6f, startRing);
     }
     // Update is called once per frame
     void Update()

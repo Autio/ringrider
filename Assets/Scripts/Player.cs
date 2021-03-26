@@ -104,13 +104,13 @@ public class Player : MonoBehaviour {
     // Move the camera to center on the new ring
     void CameraToNewRing(GameObject ring)
     {
-        Debug.Log(ring);
+       
 
         var vcam = cinemachine.GetComponent<CinemachineVirtualCamera>();
-        Debug.Log("vpos" + vcam.transform.position);
+        
         vcam.LookAt = ring.transform;
         vcam.Follow = ring.transform;
-       // Camera.main.transform.position = new Vector3(ring.transform.position.x, ring.transform.position.y, Camera.main.transform.position.z);
+
     }
 
     // Update is called once per frame
@@ -120,7 +120,7 @@ public class Player : MonoBehaviour {
         if(ticker < 0 && !started) 
         {   
             started = true;
-            transform.position = new Vector2(0, -GameObject.Find("StartRing").GetComponent<Ring>().radius + 0.18f);
+            transform.position = new Vector2(0, -GameObject.Find("StartRing").GetComponent<Ring>().radius + 0.14f);
             activeRing = GameObject.Find("StartRing");
             transform.parent = activeRing.transform.Find("Inner Track");
             
