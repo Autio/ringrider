@@ -99,6 +99,9 @@ public class Player : MonoBehaviour {
         innerTrack.GetComponent<Rotate>().enabled = true;
         activeRing = targetRing;
         CameraToNewRing(activeRing);
+
+        // Activate the central circle too
+        activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().active = true;
     }
 
     // Move the camera to center on the new ring

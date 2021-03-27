@@ -6,8 +6,10 @@ public class RingController : Singleton<GameController>
 {
     // Manage the standard level of rings
     List<GameObject> Rings = new List<GameObject>();
+    List<GameObject> CircleCenters = new List<GameObject>();
     public GameObject ringPrefab;
     public GameObject coinPrefab;
+    public GameObject circleCentrePrefab;
     public GameObject startRing;
     public Color[] ringColours;
 
@@ -83,8 +85,8 @@ public class RingController : Singleton<GameController>
             newRing.GetComponent<Ring>().radius = radius;
             newRing.GetComponent<CircleCollider2D>().radius = radius;
 
-            newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth,  ringColours[Random.Range(0,ringColours.Length)]);
-            
+            Color ringColour = ringColours[Random.Range(0,ringColours.Length)];
+            newRing.GetComponent<Ring>().DrawPolygon(60, radius, spawnPos, ringWidth, ringWidth, ringColour);
             newRing.transform.parent = ringHolder.transform;
             // Create the trigger which the player can hit to switch here
             GameObject triggerObject = new GameObject();
@@ -97,6 +99,10 @@ public class RingController : Singleton<GameController>
             triggerObject.transform.position = new Vector2(intersectionX, intersectionY);
             triggerObject.transform.parent = newRing.transform;
 
+            // Create the circle at the centre
+            GameObject newCircle = CreateCircleCentre(circleCentrePrefab, spawnPos, ringColour, radius, i);
+            CircleCenters.Add(newCircle);
+            newCircle.transform.parent = newRing.transform;
             // Create some coins for the ring
 
             // Add the ring to the list
@@ -111,6 +117,16 @@ public class RingController : Singleton<GameController>
 
         }
 
+    }
+
+    GameObject CreateCircleCentre(GameObject circleCentrePrefab, Vector2 pos, Color colour, float radius, int id)
+    {
+        GameObject newCircle = Instantiate(circleCentrePrefab, pos, Quaternion.identity);
+        CircleCentre cc = newCircle.GetComponent<CircleCentre>();
+        cc.color = colour;
+        cc.maxRadius = radius;
+        cc.id = id;
+        return newCircle;
     }
 
     void CreateCoins(GameObject newRing, GameObject triggerObject, float radius)
