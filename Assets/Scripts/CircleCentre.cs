@@ -9,13 +9,14 @@ public class CircleCentre : MonoBehaviour
     public Color color;
     public float maxRadius;
     public float expansionSpeed = 1.0f;
-    float circleRadius = 0.1f;
+    float circleRadius = 0.25f;
     private LineRenderer lineRenderer;
     public bool active = false;
     void Start()
     {
         //radius = this.transform.localScale.x;
         lineRenderer = GetComponent<LineRenderer>();
+        DrawPolygon(42, .1f, this.transform.position, .25f, .25f, color);
 
        // DrawCircle(texture, new Color(.2f,.2f,.2f), transform.position.x, transform.position.y, 1); 
     }
@@ -23,11 +24,11 @@ public class CircleCentre : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(active && circleRadius < maxRadius)
+        if(active && circleRadius < maxRadius - .02f)
         {
             circleRadius += Time.deltaTime * expansionSpeed;
             this.transform.localScale = new Vector3(circleRadius, circleRadius, circleRadius); 
-            DrawPolygon(60, circleRadius / 2, this.transform.position, circleRadius, circleRadius, color);
+            DrawPolygon(42, circleRadius / 2, this.transform.position, circleRadius, circleRadius, color);
 
         }
     }
@@ -39,6 +40,10 @@ public class CircleCentre : MonoBehaviour
         lineRenderer.endWidth = endWidth;
         lineRenderer.loop = true;
       //  color.g += Random.Range(-.02f,.02f);
+        color.a = 1.0f;
+        color.r += 0.15f;
+        color.g += 0.15f;
+        color.b += 0.15f;
         lineRenderer.startColor = color;
         lineRenderer.endColor = color;
 
@@ -56,7 +61,7 @@ public class CircleCentre : MonoBehaviour
             lineRenderer.SetPosition(i, centerPos + rotationMatrix.MultiplyPoint(initialRelativePosition));
         }
         // Make sure the circle loops perfectly by setting the last and the first points as the same
-        lineRenderer.SetPosition(vertexNumber - 1, lineRenderer.GetPosition(0));
+        lineRenderer.SetPosition(vertexNumber -1, lineRenderer.GetPosition(0));
 
   
     }

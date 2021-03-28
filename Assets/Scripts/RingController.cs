@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class RingController : Singleton<GameController>
 {
     // Manage the standard level of rings
@@ -10,6 +10,7 @@ public class RingController : Singleton<GameController>
     public GameObject ringPrefab;
     public GameObject coinPrefab;
     public GameObject circleCentrePrefab;
+    public GameObject circleTextPrefab;
     public GameObject startRing;
     public Color[] ringColours;
 
@@ -103,18 +104,20 @@ public class RingController : Singleton<GameController>
             GameObject newCircle = CreateCircleCentre(circleCentrePrefab, spawnPos, ringColour, radius, i);
             CircleCenters.Add(newCircle);
             newCircle.transform.parent = newRing.transform;
-            // Create some coins for the ring
 
+            // Create the ID text for the circle
+            GameObject circleText = Instantiate(circleTextPrefab, spawnPos, Quaternion.identity);
+            circleText.GetComponent<TextMeshPro>().text = (i + 1).ToString();
+            circleText.transform.parent = newRing.transform;
             // Add the ring to the list
             Rings.Add(newRing);
             
         }
 
-        // Now add rings
+        // Create some coins for the ring
         foreach(GameObject ring in Rings)
         {
             CreateCoins(ring, ring.transform.Find("Trigger").gameObject, ring.GetComponent<Ring>().radius);
-
         }
 
     }
