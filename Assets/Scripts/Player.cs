@@ -12,6 +12,8 @@ public class Player : MonoBehaviour {
     // The ring the player is currently in
     public GameObject activeRing;
     public GameObject targetRing;
+    public GameObject coinEffectPrefab;
+    public GameObject deathEffectPrefab;
     bool onInnerTrack = true; // vs outer track
     int points = 0;
     int scoreMultiplier = 1;
@@ -101,7 +103,9 @@ public class Player : MonoBehaviour {
         CameraToNewRing(activeRing);
 
         // Activate the central circle too
+        //activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().InitCircle();
         activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().active = true;
+        activeRing.transform.Find("CircleText(Clone)").gameObject.SetActive(true);
     }
 
     // Move the camera to center on the new ring
@@ -238,6 +242,11 @@ public class Player : MonoBehaviour {
 
     }
 
+    private void Death()
+    {
+        Destroy(GameObject.Instantiate(deathEffectPrefab, transform.position, Quaternion.identity), 3.0f);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
@@ -247,6 +256,7 @@ public class Player : MonoBehaviour {
             if(!onInnerTrack)
             {
                 Debug.Log("Game overrr");
+                Death();
                 Destroy(gameObject);
             }
         }
@@ -254,6 +264,7 @@ public class Player : MonoBehaviour {
         if(collision.gameObject.layer == 9)
         {
             Debug.Log("Game overrr");
+            Death();
             Destroy(gameObject);
         }
 
@@ -268,18 +279,16 @@ public class Player : MonoBehaviour {
         // Grab a coin
         if(collision.gameObject.layer == 8)
         {
-            Debug.Log("Coin!");
             GameController.Instance.coins++;
             
             Destroy(collision.gameObject);
-            // TODO: Play effect
+            GameObject coinParticles = Instantiate(coinEffectPrefab, collision.transform.position, Quaternion.identity);
+            Destroy(coinParticles, 1.0f);
         }
 
         if(collision.transform.name == "StartTrigger")
         {
             // The player has landed and should be parented to the inner circle
-
-
             // Activate rotation
             GameObject.Find("PlayTracks").GetComponent<Rotate>().active = true;
 

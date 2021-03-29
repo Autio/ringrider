@@ -16,9 +16,13 @@ public class CircleCentre : MonoBehaviour
     {
         //radius = this.transform.localScale.x;
         lineRenderer = GetComponent<LineRenderer>();
-        DrawPolygon(42, .1f, this.transform.position, .25f, .25f, color);
+        
 
        // DrawCircle(texture, new Color(.2f,.2f,.2f), transform.position.x, transform.position.y, 1); 
+    }
+
+    public void InitCircle() {
+        DrawPolygon(42, .1f, this.transform.position, .25f, .25f, color);
     }
 
     // Update is called once per frame

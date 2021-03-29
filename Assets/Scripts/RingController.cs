@@ -18,7 +18,7 @@ public class RingController : Singleton<GameController>
     void Start()
     {
         // Grab that start ring
-        BuildLevel(100,.6f,1.6f, startRing);
+        BuildLevel(100,.7f,1.75f, startRing);
     }
     // Update is called once per frame
     void Update()
@@ -109,6 +109,7 @@ public class RingController : Singleton<GameController>
             GameObject circleText = Instantiate(circleTextPrefab, spawnPos, Quaternion.identity);
             circleText.GetComponent<TextMeshPro>().text = (i + 1).ToString();
             circleText.transform.parent = newRing.transform;
+            circleText.SetActive(false);
             // Add the ring to the list
             Rings.Add(newRing);
             
