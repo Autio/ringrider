@@ -1,24 +1,40 @@
-﻿using System.Collections;
+﻿using System;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
 using UnityEngine.Advertisements;
+using DG.Tweening;
+using TMPro;
+
+using Random=UnityEngine.Random;
+
 
 // TODO:
-// Creation of new rings
-// Ability to hop on to new rings
-// Move camera to new ring
-// Colour change old ring
-// Death counter in the middle of the ring
 // Sound effect on hopping
 // Sound effect on coin collection
 // Sound effect on death
 
+// Custom player stats store
+// The player's highscore
+// The player's coin loot
+// The player's unlocked items
+
+// Playerprefs can store: 
+// Audio toggle settings
+
 public class GameController : Singleton<GameController> {
+
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
     public Transform[] obstacleSpawns = new Transform[2];
+    public List<Character> unlockedCharacters = new List<Character>();
+    public Character activeCharacter;
+
     public Color[] backgroundColors;
     public Transform rider;
     float switchCooldown = 0.07f;
@@ -28,22 +44,27 @@ public class GameController : Singleton<GameController> {
     bool gameLive = false;
     int adFrequency = 5;
     public int coins;
+    public int highScore;
+
+    int gamePlays;
    
-    public enum gameStates { playing, paused, transition, starting };
-    public gameStates gameState = gameStates.starting;
+    public enum gameStates { menu, playing, paused, transition, starting, ending };
+    public gameStates gameState = gameStates.menu;
+
+    // TEXTS
+    Text coinCounterText;
 
     // Use this for initialization
     void Start() {
+        Debug.Log("Wut");
         ColourTransition();
         Advertisement.Initialize("1696406");
+        coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
+        LoadGame();
     }
 
     // Input
-    public void Ride()
-    {
-        Debug.Log("Ride");
-    }
-    
+
     
 
     // Update is called once per frame
@@ -300,41 +321,87 @@ public class GameController : Singleton<GameController> {
         gameState = gs;
     }
 
+    public void UpdateCoinCounter()
+    {
+        coinCounterText.text = coins.ToString();
+    }
+
     public void Ending()
     {
-        Transform target = GameObject.Find("Ring").transform;
-        Sequence seq = DOTween.Sequence();
-        seq.Append(target.DOScale(0.25f, 4f));
-        GameObject[] leftoverObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        foreach(GameObject g in leftoverObstacles)
-        {
-            Destroy(g);
-        }
-
-
+        SaveGame();
+        StartCoroutine(RingController.Instance.DestroyLevel(Player.Instance.ringsReached));
         StartCoroutine(WaitEnd());
     }
     public IEnumerator WaitEnd()
     {
         while (true)
         {
-            GameObject.Find("- GameStats").GetComponent<st>().gamePlays++;
-            Debug.Log("Game plays: " + GameObject.Find("- GameStats").GetComponent<st>().gamePlays.ToString());
-            if (GameObject.Find("- GameStats").GetComponent<st>().gamePlays % adFrequency == 0)
+            gamePlays++;
+            
+            if (gamePlays % adFrequency == 0)
             {
                 // Show ad
                 Debug.Log("Showing advertisment");
                 Advertisement.Show();
-                yield return new WaitForSeconds(4.2f);
+                yield return new WaitForSeconds(5f);
 
             } else
             {
-                yield return new WaitForSeconds(4.2f);
+                yield return new WaitForSeconds(5f);
             }
+
+        
+        Debug.Log("Resetting level");
 
         // Reset level
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
         }
     }
 
+    public void SaveGame()
+    {
+
+        Save save = CreateSaveGameObject();
+
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/gamesave.save");
+        bf.Serialize(file, save);
+        file.Close();
+
+
+
+    }
+
+    private Save CreateSaveGameObject()
+    {
+        Save save = new Save();
+
+        save.gamePlays = gamePlays;
+        save.coins = coins;
+        save.highScore = highScore;
+        return save;
+    }
+
+    public void LoadGame(){
+        Debug.Log("Loading game");
+        if(File.Exists(Application.persistentDataPath + "/gamesave.save"))
+        {
+            // Clear stuff if needs clearing
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(Application.persistentDataPath + "/gamesave.save", FileMode.Open);
+            Save save = (Save)bf.Deserialize(file);
+            file.Close();
+
+            gamePlays = save.gamePlays;
+            coins = save.coins;
+            highScore = save.highScore;
+            unlockedCharacters = save.unlockedCharacters;
+            activeCharacter = save.activeCharacter;
+
+            Debug.Log(save.highScore);
+            Debug.Log("Game Loaded");
+
+        }
+    }
 }

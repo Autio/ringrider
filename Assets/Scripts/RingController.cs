@@ -2,23 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class RingController : Singleton<GameController>
+public class RingController : Singleton<RingController>
 {
     // Manage the standard level of rings
     List<GameObject> Rings = new List<GameObject>();
     List<GameObject> CircleCenters = new List<GameObject>();
+
+    public AudioClip ringDeathSound;
     public GameObject ringPrefab;
     public GameObject coinPrefab;
     public GameObject circleCentrePrefab;
     public GameObject circleTextPrefab;
     public GameObject startRing;
     public Color[] ringColours;
-
+    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
         // Grab that start ring
         BuildLevel(100,.7f,1.75f, startRing);
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = ringDeathSound;
     }
     // Update is called once per frame
     void Update()
@@ -171,7 +175,6 @@ public class RingController : Singleton<GameController>
         //     coin.transform.parent = newRing.transform;
         // }
 
-        // TODO: Sequence of inner and outer coins
         // Starting point should be a bit after the trigger        
         int dir;
         if(Random.Range(0,10) < 5)
@@ -186,15 +189,17 @@ public class RingController : Singleton<GameController>
 
         // TODO: Increase speeds
 
+        // TODO: Create occasional alternate rings
+
         // How many sequences of coins will there be?
         int seq = 0;
         if(radius > 1)
         {
-            seq = Random.Range(1,5);
+            seq = Random.Range(1,6);
         }
         else 
         {
-            seq = Random.Range(0,3);
+            seq = Random.Range(0,4);
         }
         // How long can the sequences be? 
         int maxLength = 0;
@@ -234,15 +239,16 @@ public class RingController : Singleton<GameController>
                     Quaternion.identity) as GameObject;   
                 }
                 coin.transform.parent = newRing.transform;
-                var overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.1f, mask).Length;
-                Debug.Log(overlaps);
-
-                if(overlaps > 1 && !inner) 
+                var overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.35f, r_layerMask).Length;
+                var c_overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.3f, c_layerMask).Length;
+                Debug.Log("C overlaps " + c_overlaps);
+                if((overlaps > 0 && !inner) || c_overlaps > 1) 
                 {
                     Destroy(coin);
                     i++;
 
                 } 
+                
                 // If overlaps with a ring, end sequence
 
             }
@@ -271,5 +277,31 @@ public class RingController : Singleton<GameController>
 
     return signed_angle;
 }
+
+    public IEnumerator DestroyLevel(int ringReached = 20)
+    {
+        Debug.Log("Destroying the level");
+        // Start ticking away only from a bit ahead of the player
+        int lastRing = Rings.Count - 1;
+        int maxRing = Mathf.Min(lastRing, ringReached + 10);
+                
+        for (int i = lastRing; i > maxRing; i--)
+        {
+            Destroy(Rings[i]);
+        }
+
+        float delay = 0.01f;
+        for (int i = maxRing; i >= 0; i--)
+        {
+            delay += 0.01f;
+            yield return new WaitForSeconds(delay);
+
+            audioSource.PlayOneShot(ringDeathSound);
+            
+            Destroy(Rings[i]);
+        }
+        Rings.Clear();
+        CircleCenters.Clear();
+    }
 
 }

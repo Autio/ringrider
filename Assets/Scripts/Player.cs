@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Cinemachine;
 
-public class Player : MonoBehaviour {
+public class Player : Singleton<Player> {
 
     public GameObject cinemachine;
     public int lapCounter = 0;
@@ -15,6 +15,7 @@ public class Player : MonoBehaviour {
     public GameObject coinEffectPrefab;
     public GameObject deathEffectPrefab;
     bool onInnerTrack = true; // vs outer track
+    public int ringsReached = 0;
     int points = 0;
     int scoreMultiplier = 1;
     float ticker = 0.2f;
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour {
     void Start () {
         this.GetComponent<Rigidbody2D>().isKinematic = true;
         this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
+
+        ringsReached = 0;
         
         //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
     }
@@ -39,6 +42,7 @@ public class Player : MonoBehaviour {
         {
             hopCoolDown = 0.15f;
             HopToRing(targetRing);
+
         } else if (hopCoolDown < 0)
         {
             // Hop to the other track
@@ -76,6 +80,7 @@ public class Player : MonoBehaviour {
 
     public void HopToRing(GameObject targetRing)
     {
+        ringsReached++;
         // Move the player to the inner track of the target ring
         // Use the trigger point and move then towards the centre of the new ring
         Transform trigger = targetRing.transform.Find("Trigger");
@@ -164,19 +169,19 @@ public class Player : MonoBehaviour {
         // Set gamestate to transition
         GameController.Instance.SetState(GameController.gameStates.transition);
 
-
         // Juice
         // Move player back to centre
-        Sequence seq = DOTween.Sequence();
-        seq.Append(this.transform.DOScale(0.25f, 0.1f));
-        seq.Append(this.transform.DOScale(0.05f, 0.1f));
-        seq.Append(this.transform.DOScale(0.4f, 0.1f));
+        // Sequence seq = DOTween.Sequence();
+        // seq.Append(this.transform.DOScale(0.25f, 0.1f));
+        // seq.Append(this.transform.DOScale(0.05f, 0.1f));
+        // seq.Append(this.transform.DOScale(0.4f, 0.1f));
 
-        this.transform.DOScale(0.06f, 3.2f);
+        // this.transform.DOScale(0.06f, 3.2f);
         this.transform.DOMove(new Vector3(0, 0, 0), 3.2f);
 
         // Reset scene after a delay
         GameController.Instance.Ending();
+
     }
 
     void Points()
@@ -256,6 +261,7 @@ public class Player : MonoBehaviour {
             if(!onInnerTrack)
             {
                 Debug.Log("Game overrr");
+                GameOver();
                 Death();
                 Destroy(gameObject);
             }
@@ -264,6 +270,7 @@ public class Player : MonoBehaviour {
         if(collision.gameObject.layer == 9)
         {
             Debug.Log("Game overrr");
+            GameOver();
             Death();
             Destroy(gameObject);
         }
@@ -280,6 +287,7 @@ public class Player : MonoBehaviour {
         if(collision.gameObject.layer == 8)
         {
             GameController.Instance.coins++;
+            GameController.Instance.UpdateCoinCounter();
             
             Destroy(collision.gameObject);
             GameObject coinParticles = Instantiate(coinEffectPrefab, collision.transform.position, Quaternion.identity);
@@ -297,27 +305,7 @@ public class Player : MonoBehaviour {
 
         }
 
-        if(collision.transform.tag == "Lap")
-        {
-            // Lap has been circumnavigated
-            DoLap();
-        }
-
-        if(collision.transform.tag == "Obstacle")
-        {
-            GameOver();
-        }
-
-
-        if (collision.transform.tag == "Points")
-        {
-            Points();
-        }
-
-        if(collision.transform.tag == "Bonus")
-        {
-            PickUpBonus(collision);
-        }
+    
     }
 
 }
