@@ -56,11 +56,12 @@ public class GameController : Singleton<GameController> {
 
     // Use this for initialization
     void Start() {
-        Debug.Log("Wut");
         ColourTransition();
         Advertisement.Initialize("1696406");
         coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         LoadGame();
+        coinCounterText.text = coins.ToString();
+
     }
 
     // Input
@@ -306,6 +307,7 @@ public class GameController : Singleton<GameController> {
 
     }
 
+
     public void ColourTransition()
     {
         // Pick a random colour and transition to it gradually
@@ -404,4 +406,31 @@ public class GameController : Singleton<GameController> {
 
         }
     }
+
+    public void Play2DClipAtPoint(AudioClip clip, float pitch, float volume = 1)
+{
+    //  Create a temporary audio source object
+    GameObject tempAudioSource = new GameObject("TempAudio");
+
+    //  Add an audio source
+    AudioSource audioSource = tempAudioSource.AddComponent<AudioSource>();
+
+    //  Add the clip to the audio source
+    audioSource.clip = clip;
+
+    audioSource.pitch = pitch;
+
+    //  Set the volume
+    audioSource.volume = volume;
+
+    //  Set properties so it's 2D sound
+    audioSource.spatialBlend = 0.0f;
+
+    //  Play the audio
+    audioSource.Play();
+
+    //  Set it to self destroy
+    Destroy(tempAudioSource, clip.length);
+
+}
 }

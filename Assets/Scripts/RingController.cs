@@ -8,11 +8,13 @@ public class RingController : Singleton<RingController>
     List<GameObject> Rings = new List<GameObject>();
     List<GameObject> CircleCenters = new List<GameObject>();
 
-    public AudioClip ringDeathSound;
+    public AudioClip[] ringDeathSounds;
     public GameObject ringPrefab;
     public GameObject coinPrefab;
+    public GameObject ringEffectPrefab;
     public GameObject circleCentrePrefab;
     public GameObject circleTextPrefab;
+    
     public GameObject startRing;
     public Color[] ringColours;
     AudioSource audioSource;
@@ -21,8 +23,7 @@ public class RingController : Singleton<RingController>
     {
         // Grab that start ring
         BuildLevel(100,.7f,1.75f, startRing);
-        audioSource = GetComponent<AudioSource>();
-        audioSource.clip = ringDeathSound;
+        
     }
     // Update is called once per frame
     void Update()
@@ -114,6 +115,10 @@ public class RingController : Singleton<RingController>
             circleText.GetComponent<TextMeshPro>().text = (i + 1).ToString();
             circleText.transform.parent = newRing.transform;
             circleText.SetActive(false);
+
+            // Create ring effect
+            GameObject ro = CreateRingEffect(spawnPos,ringColour,radius);
+            ro.transform.parent = newRing.transform;
             // Add the ring to the list
             Rings.Add(newRing);
             
@@ -241,7 +246,7 @@ public class RingController : Singleton<RingController>
                 coin.transform.parent = newRing.transform;
                 var overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.35f, r_layerMask).Length;
                 var c_overlaps = Physics2D.OverlapCircleAll(coin.transform.position, coin.GetComponent<CircleCollider2D>().radius * 1.3f, c_layerMask).Length;
-                Debug.Log("C overlaps " + c_overlaps);
+                
                 if((overlaps > 0 && !inner) || c_overlaps > 1) 
                 {
                     Destroy(coin);
@@ -278,6 +283,19 @@ public class RingController : Singleton<RingController>
     return signed_angle;
 }
 
+    GameObject CreateRingEffect(Vector2 spawnPos, Color ringColour, float radius)
+    {
+        GameObject go = Instantiate(ringEffectPrefab,spawnPos, Quaternion.identity);
+        RingEffect re = go.GetComponent<RingEffect>();
+        re.radius = radius;
+        re.origRadius = radius;
+        re.speed = radius * 2;
+        re.color = ringColour;
+
+        return go;
+
+    }
+
     public IEnumerator DestroyLevel(int ringReached = 20)
     {
         Debug.Log("Destroying the level");
@@ -290,13 +308,15 @@ public class RingController : Singleton<RingController>
             Destroy(Rings[i]);
         }
 
+        yield return new WaitForSeconds(0.5f);
+
         float delay = 0.01f;
         for (int i = maxRing; i >= 0; i--)
         {
             delay += 0.01f;
             yield return new WaitForSeconds(delay);
 
-            audioSource.PlayOneShot(ringDeathSound);
+            GameController.Instance.Play2DClipAtPoint(ringDeathSounds[Random.Range(0,ringDeathSounds.Length)], Random.Range(0.9f,1f));
             
             Destroy(Rings[i]);
         }

@@ -14,6 +14,12 @@ public class Player : Singleton<Player> {
     public GameObject targetRing;
     public GameObject coinEffectPrefab;
     public GameObject deathEffectPrefab;
+    public AudioClip playerDeathSound;
+    public AudioClip ringSwitchSound;
+
+    public AudioClip coinSound;
+    float prevCoinSoundPitch = 1;
+    bool coinSoundsUp = true;
     bool onInnerTrack = true; // vs outer track
     public int ringsReached = 0;
     int points = 0;
@@ -27,7 +33,7 @@ public class Player : Singleton<Player> {
     void Start () {
         this.GetComponent<Rigidbody2D>().isKinematic = true;
         this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
-
+        
         ringsReached = 0;
         
         //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
@@ -80,7 +86,8 @@ public class Player : Singleton<Player> {
 
     public void HopToRing(GameObject targetRing)
     {
-        ringsReached++;
+        ringsReached++;      
+
         // Move the player to the inner track of the target ring
         // Use the trigger point and move then towards the centre of the new ring
         Transform trigger = targetRing.transform.Find("Trigger");
@@ -101,17 +108,24 @@ public class Player : Singleton<Player> {
         Debug.Log("Radius ratio: " + radiusRatio);
         innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
 
+        // Make a sound 
+        GameController.Instance.Play2DClipAtPoint(ringSwitchSound, activeRing.GetComponent<Ring>().radius);
         
         innerTrack.GetComponent<Rotate>().active = true;
         innerTrack.GetComponent<Rotate>().enabled = true;
         activeRing = targetRing;
         CameraToNewRing(activeRing);
 
+        // Activate the ring effect 
+        activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().enabled = true;
+        Destroy(activeRing.transform.Find("RingEffect(Clone)"), 15f);
+
         // Activate the central circle too
         //activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().InitCircle();
         activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().active = true;
         activeRing.transform.Find("CircleText(Clone)").gameObject.SetActive(true);
     }
+
 
     // Move the camera to center on the new ring
     void CameraToNewRing(GameObject ring)
@@ -160,6 +174,9 @@ public class Player : Singleton<Player> {
 
     void GameOver()
     {
+        // Play sound effect
+        GameController.Instance.Play2DClipAtPoint(playerDeathSound, Random.Range(0.9f, 1.1f));
+
         // Show points
 
         // Stop movement
@@ -201,6 +218,45 @@ public class Player : Singleton<Player> {
         seq.Append(t.transform.DOScale(1.1f, 0.2f));
         seq.Append(t.transform.DOScale(0.9f, 0.2f));
         seq.Append(t.transform.DOScale(1.0f, 0.2f));
+
+    }
+
+    void CoinSound(){
+        float newPitch = 0;
+        float step = 0.02f;
+        float minPitch = 0.5f;
+        float maxPitch = 1.2f;
+
+        int dir = 1;
+        if(!coinSoundsUp)
+        {
+            dir = -1;
+        }
+    
+        if (Random.Range(0, 10) < 5)
+        {
+            newPitch = prevCoinSoundPitch + step * dir;
+        } else
+        {
+            newPitch = prevCoinSoundPitch + 2 * step * dir;
+        }
+        
+        if(Random.Range(0, 20) < 1)
+        {
+            newPitch = 1;
+        }
+        if (newPitch >= maxPitch)
+        {
+            coinSoundsUp = false;
+        }
+        if (newPitch <= minPitch)
+        {
+            coinSoundsUp = true;
+        }
+        newPitch = Mathf.Clamp(newPitch, 0.3f, 1.3f);
+
+        GameController.Instance.Play2DClipAtPoint(coinSound, newPitch, 0.7f);
+        prevCoinSoundPitch = newPitch;
 
     }
 
@@ -288,6 +344,7 @@ public class Player : Singleton<Player> {
         {
             GameController.Instance.coins++;
             GameController.Instance.UpdateCoinCounter();
+            CoinSound();
             
             Destroy(collision.gameObject);
             GameObject coinParticles = Instantiate(coinEffectPrefab, collision.transform.position, Quaternion.identity);
@@ -307,5 +364,7 @@ public class Player : Singleton<Player> {
 
     
     }
+
+    
 
 }
