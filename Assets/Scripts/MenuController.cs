@@ -25,12 +25,12 @@ public class MenuController : Singleton<GameController>
         float otherButtonRadius = .6f;
        
         DrawPolygon(60, playButtonRadius, playButton.transform.position, width, width, ringColors[0], playButton.GetComponent<LineRenderer>());
-        Vector2 shareButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width, 4.54f); // Angle between 0 and 2 * pi
-        DrawPolygon(60, otherButtonRadius, shareButtonPosition, width, width, ringColors[1], shareButton.GetComponent<LineRenderer>());
-        
-        Vector2 rateButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width, 3.86f); // Angle between 0 and 2 * pi
+        Vector2 shareButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width,3.86f ); // Angle between 0 and 2 * pi
+        DrawPolygon(60, otherButtonRadius, shareButtonPosition, width, width, ringColors[1], shareButton.GetComponent<LineRenderer>());  
+
+        Vector2 rateButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width, 4.54f); // Angle between 0 and 2 * pi
         DrawPolygon(60, otherButtonRadius, rateButtonPosition, width, width, ringColors[2], rateButton.GetComponent<LineRenderer>());
-        
+              
         Vector2 characterButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width, 5.22f); // Angle between 0 and 2 * pi
         DrawPolygon(60, otherButtonRadius, characterButtonPosition, width, width, ringColors[3], characterButton.GetComponent<LineRenderer>());
 
@@ -49,6 +49,12 @@ public class MenuController : Singleton<GameController>
     {
         Debug.Log("Starting to play the level");
          SceneManager.LoadScene("play");
+    }
+
+    public void OpenPlayStore()
+    {
+        Debug.Log("Sending the user to the app page");
+        Application.OpenURL ("market://details?id=" + Application.identifier);
     }
 
     public Vector2 newRingPosition (float playButtonRadius, float radius, float ringWidth, float angle)
