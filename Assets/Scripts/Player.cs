@@ -7,6 +7,7 @@ using Cinemachine;
 
 public class Player : Singleton<Player> {
 
+    GameController gc;
     public GameObject cinemachine;
     public int lapCounter = 0;
     // The ring the player is currently in
@@ -24,37 +25,53 @@ public class Player : Singleton<Player> {
     public int ringsReached = 0;
     int points = 0;
     int scoreMultiplier = 1;
-    float ticker = 0.2f;
+    float ticker = 0.4f;
     bool started = false;
     bool ableToHopRings = false;
     float hopCoolDown = .05f;
     float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
     // Use this for initialization
-    void Start () {
-        this.GetComponent<Rigidbody2D>().isKinematic = true;
-        this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
-        
-        ringsReached = 0;
+    void Awake () {
+        ResetPlayer();
         
         //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
     }
 
+    private void Start() {
+        gc = GameObject.Find("GameController").GetComponent<GameController>(); 
+
+    }
+
+    public void ResetPlayer()
+    {
+        ringsReached = 0;
+        this.GetComponent<Rigidbody2D>().isKinematic = true;
+        this.GetComponent<Rigidbody2D>().useFullKinematicContacts = true;
+    }
+
     public void Ride()
     {
+        try{
         // If gamemode is playing
-
-        // If at a switching point, allow switching
-        if(onInnerTrack && ableToHopRings && hopCoolDown < 0)
+        if(GameController.instance.gameState == GameController.gameStates.playing)
         {
-            hopCoolDown = 0.15f;
-            HopToRing(targetRing);
+            // If at a switching point, allow switching
+            if(onInnerTrack && ableToHopRings && hopCoolDown < 0)
+            {
+                hopCoolDown = 0.15f;
+                HopToRing(targetRing);
 
-        } else if (hopCoolDown < 0)
-        {
-            // Hop to the other track
-            hopCoolDown = 0.15f;
-            HopTracks();
-            
+            } else if (hopCoolDown < 0)
+            {
+                // Hop to the other track
+                hopCoolDown = 0.15f;
+                HopTracks();
+                
+            }
+        }
+        }
+        catch {
+            Debug.Log("Error with input");
         }
 
     }
@@ -66,7 +83,7 @@ public class Player : Singleton<Player> {
         if(onInnerTrack)
         {
             float radiusRatio = (activeRing.GetComponent<Ring>().radius + offset) / activeRing.GetComponent<Ring>().radius;
-            Debug.Log(radiusRatio + " should be larger than " + activeRing.GetComponent<Ring>().radius);
+           // Debug.Log(radiusRatio + " should be larger than " + activeRing.GetComponent<Ring>().radius);
             activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed / radiusRatio;
            
             // Hop to the outer track
@@ -130,8 +147,6 @@ public class Player : Singleton<Player> {
     // Move the camera to center on the new ring
     void CameraToNewRing(GameObject ring)
     {
-       
-
         var vcam = cinemachine.GetComponent<CinemachineVirtualCamera>();
         
         vcam.LookAt = ring.transform;
@@ -139,17 +154,36 @@ public class Player : Singleton<Player> {
 
     }
 
-    // Update is called once per frame
-    void Update () {
-        hopCoolDown -= Time.deltaTime;
-        ticker -= Time.deltaTime;
-        if(ticker < 0 && !started) 
-        {   
-            started = true;
+
+    public void SetPlayerStart()
+    {
             transform.position = new Vector2(0, -GameObject.Find("StartRing").GetComponent<Ring>().radius + 0.14f);
             activeRing = GameObject.Find("StartRing");
             transform.parent = activeRing.transform.Find("Inner Track");
+            GameObject.Find("StartRing").transform.Find("Inner Track").GetComponent<Rotate>().enabled = true;
+            // Game is now playing
+            gc = GameObject.Find("GameController").GetComponent<GameController>();
+            gc.gameState = GameController.gameStates.playing;
             
+    }
+    // Update is called once per frame
+    void Update () {
+
+        
+        hopCoolDown -= Time.deltaTime;
+        
+        
+        if(gc.gameState == GameController.gameStates.starting) {
+            ticker -= Time.deltaTime;
+            Debug.Log("Ticker " + ticker);
+
+        }
+
+        // Starts the game flow
+        if(ticker < 0 && GameController.instance.gameState == GameController.gameStates.starting) 
+        {   
+            SetPlayerStart();
+
         }
 		if(GameController.Instance.gameState == GameController.gameStates.starting)
         {

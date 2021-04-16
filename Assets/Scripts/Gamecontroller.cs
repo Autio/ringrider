@@ -29,6 +29,7 @@ using Random=UnityEngine.Random;
 
 public class GameController : Singleton<GameController> {
 
+    public GameObject playContainer;
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
     public Transform[] obstacleSpawns = new Transform[2];
@@ -58,9 +59,26 @@ public class GameController : Singleton<GameController> {
     void Start() {
         ColourTransition();
         Advertisement.Initialize("1696406");
-        coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         LoadGame();
+        StartGame();
+
+    }
+
+    public void StartGame()
+    {
+        Debug.Log("Starting game");
+        gameState = gameStates.starting;
+
+        // Hide the menu
+       // GameObject.Find("Menu").SetActive(false);
+       // playContainer.SetActive(true);
+
+        coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         coinCounterText.text = coins.ToString();
+        // Build the level
+        Debug.Log(RingController.instance);
+        GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
+        GameObject.Find("Rider").GetComponent<Player>().ResetPlayer();
 
     }
 

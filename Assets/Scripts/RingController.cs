@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+
 public class RingController : Singleton<RingController>
 {
     // Manage the standard level of rings
@@ -21,8 +22,9 @@ public class RingController : Singleton<RingController>
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("RingController " + transform.name);
         // Grab that start ring
-        BuildLevel(100,.7f,1.75f, startRing);
+      //  BuildLevel(100,.7f,1.75f, startRing);
         
     }
     // Update is called once per frame
@@ -32,8 +34,9 @@ public class RingController : Singleton<RingController>
     }
 
     // Build level
-    void BuildLevel(int rings, float minRingRadius, float maxRingRadius, GameObject startRing)
+    public void BuildLevel(int rings, float minRingRadius, float maxRingRadius)
     {
+        startRing = GameObject.Find("StartRing");
         // Create a sequence of rings in a chain where the next ring is tangential to the previous one
         // And the rings don't overlap with previous rings
         GameObject ringHolder = this.gameObject;
@@ -130,6 +133,11 @@ public class RingController : Singleton<RingController>
             CreateCoins(ring, ring.transform.Find("Trigger").gameObject, ring.GetComponent<Ring>().radius);
         }
 
+    }
+
+    public void PrintMe()
+    {
+        Debug.Log("I exist");
     }
 
     GameObject CreateCircleCentre(GameObject circleCentrePrefab, Vector2 pos, Color colour, float radius, int id)
