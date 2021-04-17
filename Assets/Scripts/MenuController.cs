@@ -57,6 +57,26 @@ public class MenuController : Singleton<GameController>
         Application.OpenURL ("market://details?id=" + Application.identifier);
     }
 
+    public void ShareLink()
+    {
+        #if UNITY_ANDROID
+        // Get the Intent and UnityPlayer classes
+        AndroidJavaClass intentClass = new AndroidJavaClass("android.content.Intent");
+        AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+
+        // Using intents
+        AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent");
+        intent.Call<AndroidJavaObject>("setAction", intentClass.GetStatic<string>("ACTION_SEND"));
+        intent.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), "Ring Rider");
+        intent.Call<AndroidJavaObject>("setType", "text/plain");
+
+        // Display the chooser 
+        AndroidJavaObject currentActivity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+        AndroidJavaObject chooser = intentClass.CallStatic<AndroidJavaObject>("createChooser", intent, "Share");
+        currentActivity.Call("startActivity", chooser);
+        #endif
+    }
+
     public Vector2 newRingPosition (float playButtonRadius, float radius, float ringWidth, float angle)
     {
         
