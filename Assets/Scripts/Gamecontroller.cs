@@ -30,6 +30,7 @@ using Random=UnityEngine.Random;
 public class GameController : Singleton<GameController> {
 
     public GameObject playContainer;
+    public GameObject menuReturn;
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
     public Transform[] obstacleSpawns = new Transform[2];
@@ -55,6 +56,8 @@ public class GameController : Singleton<GameController> {
     // TEXTS
     Text coinCounterText;
 
+    bool firstMove = true;
+
     // Use this for initialization
     void Start() {
         ColourTransition();
@@ -76,9 +79,11 @@ public class GameController : Singleton<GameController> {
         coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         coinCounterText.text = coins.ToString();
         // Build the level
-        Debug.Log(RingController.instance);
         GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
         GameObject.Find("Rider").GetComponent<Player>().ResetPlayer();
+
+        // Show the menu button
+        menuReturn.SetActive(true);
 
     }
 
@@ -276,21 +281,6 @@ public class GameController : Singleton<GameController> {
     }
 
 
-    private IEnumerator PlayerActivate()
-    {
-        // Enable the player to drop
-        Debug.Log("Activating player");
-        yield return new WaitForSeconds(2.7f);
-        Transform player = GameObject.Find("Rider").transform;
-        player.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-        gameState = gameStates.playing;
-    }
-
-    void EndScene()
-    {
-
-    }
-
     public void InitTrack()
     {
         Debug.Log("Switching track!");
@@ -360,10 +350,16 @@ public class GameController : Singleton<GameController> {
             
             if (gamePlays % adFrequency == 0)
             {
+                gameState = gameStates.transition;
                 // Show ad
                 Debug.Log("Showing advertisment");
-                Advertisement.Show();
-                yield return new WaitForSeconds(5f);
+                
+                if(Advertisement.IsReady("reward"))
+                {
+                    var options = new ShowOptions { resultCallback = HandleShowResult };
+                    Advertisement.Show("reward", options);
+                    yield return new WaitForSeconds(5f);
+                }
 
             } else
             {
@@ -376,6 +372,29 @@ public class GameController : Singleton<GameController> {
         // Reset level
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
+        }
+    }
+
+    
+    private void HandleShowResult(ShowResult result)
+    {
+        // The result was received, so 
+        gameState = gameStates.starting;
+
+        switch (result)
+        {
+            case ShowResult.Finished:
+                Debug.Log("The ad was successfully shown.");
+                //
+                // Reward gamer
+                // Give coins etc.
+                break;
+            case ShowResult.Skipped:
+                Debug.Log("The ad was skipped before reaching the end.");
+                break;
+            case ShowResult.Failed:
+                Debug.LogError("The ad failed to be shown.");
+                break;
         }
     }
 
@@ -423,6 +442,12 @@ public class GameController : Singleton<GameController> {
             Debug.Log("Game Loaded");
 
         }
+    }
+
+    public void ReturnToMenu()
+    {
+        Debug.Log("Returning to Menu");
+        SceneManager.LoadScene("menu");
     }
 
     public void Play2DClipAtPoint(AudioClip clip, float pitch, float volume = 1)

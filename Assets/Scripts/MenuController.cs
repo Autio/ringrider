@@ -13,6 +13,14 @@ public class MenuController : Singleton<GameController>
 
     public GameObject characterButton;
 
+    public GameObject menuJuice1;
+    public GameObject menuJuice2;
+    public GameObject menuJuice3;
+    public GameObject menuJuice4;
+
+
+
+
     public Color[] ringColors;
 
     void Start()
@@ -23,6 +31,17 @@ public class MenuController : Singleton<GameController>
         float playButtonRadius = 1.2f;
         float gardenButtonRadius = 1f;
         float otherButtonRadius = .6f;
+
+        // Visual juice
+        DrawPolygon(60, 3.5f, new Vector2(0, 6), width, width, ringColors[4], menuJuice1.GetComponent<LineRenderer>());
+        DrawPolygon(64, .7f, new Vector2(0, -6.5f), 3, 3, ringColors[6], menuJuice4.GetComponent<LineRenderer>());
+
+        DrawPolygon(60, 1.5f, new Vector2(-3.4f, -6), 3, 3, ringColors[5], menuJuice2.GetComponent<LineRenderer>());
+        DrawPolygon(62, 1.5f, new Vector2(3.4f, -6f), 3, 3, ringColors[5], menuJuice3.GetComponent<LineRenderer>());
+
+
+
+        // Menu buttons
        
         DrawPolygon(60, playButtonRadius, playButton.transform.position, width, width, ringColors[0], playButton.GetComponent<LineRenderer>());
         Vector2 shareButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width,3.86f ); // Angle between 0 and 2 * pi
@@ -106,6 +125,11 @@ public class MenuController : Singleton<GameController>
             Vector3 initialRelativePosition = new Vector3(0, radius, 0);
             lineRenderer.SetPosition(i, centerPos + rotationMatrix.MultiplyPoint(initialRelativePosition));
 
+
+
             }
+
+        lineRenderer.SetPosition(vertexNumber -1, lineRenderer.GetPosition(0));
+
     }
 }

@@ -52,23 +52,24 @@ public class Player : Singleton<Player> {
     public void Ride()
     {
         try{
-        // If gamemode is playing
-        if(GameController.instance.gameState == GameController.gameStates.playing)
-        {
-            // If at a switching point, allow switching
-            if(onInnerTrack && ableToHopRings && hopCoolDown < 0)
-            {
-                hopCoolDown = 0.15f;
-                HopToRing(targetRing);
+            // If gamemode is playing
+            if(GameController.instance.gameState == GameController.gameStates.playing)
+                {
+                    // If at a switching point, allow switching
+                    if(onInnerTrack && ableToHopRings && hopCoolDown < 0)
+                    {
+                        hopCoolDown = 0.15f;
+                        HopToRing(targetRing);
 
-            } else if (hopCoolDown < 0)
-            {
-                // Hop to the other track
-                hopCoolDown = 0.15f;
-                HopTracks();
-                
-            }
-        }
+                    } else if (hopCoolDown < 0)
+                    {
+                        // Hop to the other track
+                        hopCoolDown = 0.15f;
+                        HopTracks();
+                        
+                    }
+                }
+            
         }
         catch {
             Debug.Log("Error with input");
@@ -164,6 +165,7 @@ public class Player : Singleton<Player> {
             // Game is now playing
             gc = GameObject.Find("GameController").GetComponent<GameController>();
             gc.gameState = GameController.gameStates.playing;
+            //gc.menuReturn.SetActive(false);
             
     }
     // Update is called once per frame
@@ -289,7 +291,7 @@ public class Player : Singleton<Player> {
         }
         newPitch = Mathf.Clamp(newPitch, 0.3f, 1.3f);
 
-        GameController.Instance.Play2DClipAtPoint(coinSound, newPitch, 0.7f);
+        GameController.Instance.Play2DClipAtPoint(coinSound, newPitch, 0.16f);
         prevCoinSoundPitch = newPitch;
 
     }
