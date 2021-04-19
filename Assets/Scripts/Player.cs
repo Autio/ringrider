@@ -159,29 +159,53 @@ public class Player : Singleton<Player> {
        
         AudioClip ringSwitchSFX = ringSwitchSounds[5];
 
-        if(radius > 1f)
+        if(radius > .7f)
+        {
+            ringSwitchSFX = ringSwitchSounds[0];
+        }
+        if(radius > .75f)
+        {
+            ringSwitchSFX = ringSwitchSounds[1];
+        }
+        if(radius > .85f)
+        {
+            ringSwitchSFX = ringSwitchSounds[2];
+        }
+        if(radius > .95f)
+        {
+            ringSwitchSFX = ringSwitchSounds[3];
+        }
+        if(radius > 1.05f)
         {
             ringSwitchSFX = ringSwitchSounds[4];
         }
         if(radius > 1.15f)
         {
-            ringSwitchSFX = ringSwitchSounds[3];
+            ringSwitchSFX = ringSwitchSounds[5];
         }
-        if(radius > 1.3f)
+        if(radius > 1.25f)
         {
-            ringSwitchSFX = ringSwitchSounds[2];
+            ringSwitchSFX = ringSwitchSounds[6];
+        }
+        if(radius > 1.35f)
+        {
+            ringSwitchSFX = ringSwitchSounds[7];
         }
         if(radius > 1.45f)
         {
-            ringSwitchSFX = ringSwitchSounds[1];
+            ringSwitchSFX = ringSwitchSounds[8];
         }
-        if(radius > 1.6f)
+        if(radius > 1.55f)
         {
-            ringSwitchSFX = ringSwitchSounds[0];
+            ringSwitchSFX = ringSwitchSounds[9];
+        }
+        if(radius > 1.65f)
+        {
+            ringSwitchSFX = ringSwitchSounds[10];
         }
 
 
-        GameController.Instance.Play2DClipAtPoint(ringSwitchSFX, Random.Range(0.9f,1.1f));
+        GameController.Instance.Play2DClipAtPoint(ringSwitchSFX, 1f);
 
     }
 
