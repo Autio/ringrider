@@ -20,6 +20,8 @@ public class Ring : MonoBehaviour
     public Transform outerTrack;
     public float radius = 2.0f;
     float width = 0.07f;
+
+    public int id;
     // Start is called before the first frame update
     void Awake()
     {
@@ -46,6 +48,11 @@ public class Ring : MonoBehaviour
         {
             return outerTrack;
         }
+    }
+
+    public void ActivateInnerEnemyTrack()
+    {
+        innerEnemyTrack.GetComponent<Rotate>().active = true;
     }
 
     public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color)

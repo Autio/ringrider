@@ -117,9 +117,13 @@ public class Player : Singleton<Player> {
         // Stop rotating the old ring, start rotating the new one
         Transform oldInnerTrack = activeRing.transform.Find("Inner Track");
         Transform innerTrack = targetRing.transform.Find("Inner Track");
+        // Transform oldEnemyInnerTrack = activeRing.transform.Find("Enemy Inner Track");
+        // Transform enemyInnerTrack = targetRing.transform.Find("Enemy Inner Track");
         oldInnerTrack.GetComponent<Rotate>().enabled = false;
 
         innerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
+        // enemyInnerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
+
 
         // How do we set speed appropriately?
         float radiusRatio = activeRing.GetComponent<Ring>().radius / targetRing.GetComponent<Ring>().radius;
@@ -394,6 +398,17 @@ public class Player : Singleton<Player> {
                 Death();
                 Destroy(gameObject);
             }
+        }
+
+        // Collision with enemy
+        if(collision.gameObject.layer == 10)
+        {
+
+            Debug.Log("Game overrr");
+            GameOver();
+            Death();
+            Destroy(gameObject);
+
         }
 
         if(collision.gameObject.layer == 9)

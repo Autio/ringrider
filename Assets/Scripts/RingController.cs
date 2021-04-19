@@ -94,6 +94,13 @@ public class RingController : Singleton<RingController>
                 }
             }
             
+            if(i % 2 != 0)
+            {
+                newRing.GetComponent<Ring>().GetEnemyTrack(true).GetComponent<Rotate>().dir = true;
+            }
+
+            newRing.GetComponent<Ring>().id = i;
+
             // Set the initial conditions of the ring appropriately.
             newRing.GetComponent<Ring>().radius = radius;
             newRing.GetComponent<CircleCollider2D>().radius = radius;
@@ -123,9 +130,8 @@ public class RingController : Singleton<RingController>
             circleText.transform.parent = newRing.transform;
             circleText.SetActive(false);
 
-            // Create enemies
-            CreateEnemy(newRing.GetComponent<Ring>());            
 
+            
             // Create ring effect
             GameObject ro = CreateRingEffect(spawnPos,ringColour,radius);
             ro.transform.parent = newRing.transform;
@@ -134,10 +140,49 @@ public class RingController : Singleton<RingController>
             
         }
 
+        // Second run-through
+        int ringCount = Rings.Count;
+
         // Create some coins for the ring
         foreach(GameObject ring in Rings)
         {
-            CreateCoins(ring, ring.transform.Find("Trigger").gameObject, ring.GetComponent<Ring>().radius);
+            Ring ringScript = ring.GetComponent<Ring>();
+            CreateCoins(ring, ring.transform.Find("Trigger").gameObject, ringScript.radius);
+            int id = ringScript.id;
+            bool inner = false;
+            if(Random.Range(0, 10) < 5)
+            {
+                inner = true;
+            }
+            if (id > 3 && id < 10)
+            {
+                if(Random.Range(0, 10) < 2)
+                {
+                    CreateEnemy(ring.GetComponent<Ring>(), inner);                  
+                }
+            }
+            if (id >= 10 && id < (int)(ringCount / 3))
+            {
+                if(Random.Range(0, 10) < 4)
+                {
+                    CreateEnemy(ring.GetComponent<Ring>(), inner);                  
+                }
+            }
+            if (id >= (int)(ringCount / 3) && id < (int)(ringCount / 3 * 2))
+            {
+                if(Random.Range(0, 10) < 6)
+                {
+                    CreateEnemy(ring.GetComponent<Ring>(), inner);                  
+                }
+            }
+            if (id > (int)(ringCount / 3 * 2))
+            {
+                if(Random.Range(0, 10) < 8)
+                {
+                    CreateEnemy(ring.GetComponent<Ring>(), inner);                  
+                }
+            }
+
         }
 
     }
@@ -162,15 +207,42 @@ public class RingController : Singleton<RingController>
                 new Vector3(ring.transform.position.x + Mathf.Cos(angle) * innerRadius, 
                 ring.transform.position.y + Mathf.Sin(angle) * innerRadius, 0), 
                 Quaternion.identity) as GameObject;
+
             enemy.transform.SetParent(ring.GetEnemyTrack(inner));
+            ring.ActivateInnerEnemyTrack();
 
         } else 
         {
-            float outerRadius = radius - 0.14f;
+            float outerRadius = radius + 0.14f;
+
+            bool overlaps = true;
+            Vector2 spawnPos;
+            int s_layerMask = LayerMask.GetMask("Ring"); 
+            float xPos = ring.transform.position.x + Mathf.Cos(angle) * outerRadius;
+            float yPos = ring.transform.position.y + Mathf.Sin(angle) * outerRadius;
+
             enemy = Instantiate(enemyPrefab, 
-                new Vector3(ring.transform.position.x + Mathf.Cos(angle) * outerRadius, 
-                ring.transform.position.y + Mathf.Sin(angle) * outerRadius, 0), 
+                new Vector3(xPos, yPos, 0), 
                 Quaternion.identity) as GameObject;   
+
+            while (overlaps)
+            {
+                angle = Random.Range(0, 2 * Mathf.PI);
+                xPos = ring.transform.position.x + Mathf.Cos(angle) * outerRadius;
+                yPos = ring.transform.position.y + Mathf.Sin(angle) * outerRadius;
+                spawnPos = new Vector2(xPos, yPos);
+                enemy.transform.position = spawnPos;
+
+                // Make sure the new circle doesn't overlap old ones
+                var olap = Physics2D.OverlapCircleAll(spawnPos, 0.19f, s_layerMask);
+                if (olap.Length <= 1)
+                {
+                    overlaps = false;
+                }
+            }
+
+            enemy.transform.SetParent(ring.gameObject.transform);
+
         }
 
         Enemies.Add(enemy);
