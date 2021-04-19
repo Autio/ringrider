@@ -15,6 +15,8 @@ public class Ring : MonoBehaviour
     // Inner track and outer track invisible circles get 
     private LineRenderer lineRenderer;
     public Transform innerTrack;
+
+    public Transform innerEnemyTrack;
     public Transform outerTrack;
     public float radius = 2.0f;
     float width = 0.07f;
@@ -31,6 +33,19 @@ public class Ring : MonoBehaviour
         innerTrack.localScale = new Vector3(radius *.98f / 2.58f, radius *.98f / 2.58f, 1);
         outerTrack.localScale = new Vector3(radius *1.02f / 2.5f, radius * 1.02f / 2.5f, 1);
 
+    }
+
+    public Transform GetEnemyTrack(bool inner)
+    {
+        // Get the inner enemy or outer track
+        if(inner)
+        {
+            return innerEnemyTrack;
+        }
+        else 
+        {
+            return outerTrack;
+        }
     }
 
     public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color)

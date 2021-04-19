@@ -16,7 +16,7 @@ public class Player : Singleton<Player> {
     public GameObject coinEffectPrefab;
     public GameObject deathEffectPrefab;
     public AudioClip playerDeathSound;
-    public AudioClip ringSwitchSound;
+    public AudioClip[] ringSwitchSounds;
 
     public AudioClip coinSound;
     float prevCoinSoundPitch = 1;
@@ -126,22 +126,59 @@ public class Player : Singleton<Player> {
         Debug.Log("Radius ratio: " + radiusRatio);
         innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
 
-        // Make a sound 
-        GameController.Instance.Play2DClipAtPoint(ringSwitchSound, activeRing.GetComponent<Ring>().radius);
-        
+
         innerTrack.GetComponent<Rotate>().active = true;
         innerTrack.GetComponent<Rotate>().enabled = true;
         activeRing = targetRing;
         CameraToNewRing(activeRing);
 
+        // Make a sound 
+        RingSwitchSound(activeRing.GetComponent<Ring>().radius);
+        
+        
+
         // Activate the ring effect 
         activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().enabled = true;
+        
+        
         Destroy(activeRing.transform.Find("RingEffect(Clone)"), 15f);
 
         // Activate the central circle too
         //activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().InitCircle();
         activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().active = true;
         activeRing.transform.Find("CircleText(Clone)").gameObject.SetActive(true);
+    }
+
+    public void RingSwitchSound(float radius)
+    {
+        // Play from a scale on the basis of the radius (currently .7 - 1.75) 
+       
+        AudioClip ringSwitchSFX = ringSwitchSounds[5];
+
+        if(radius > 1f)
+        {
+            ringSwitchSFX = ringSwitchSounds[4];
+        }
+        if(radius > 1.15f)
+        {
+            ringSwitchSFX = ringSwitchSounds[3];
+        }
+        if(radius > 1.3f)
+        {
+            ringSwitchSFX = ringSwitchSounds[2];
+        }
+        if(radius > 1.45f)
+        {
+            ringSwitchSFX = ringSwitchSounds[1];
+        }
+        if(radius > 1.6f)
+        {
+            ringSwitchSFX = ringSwitchSounds[0];
+        }
+
+
+        GameController.Instance.Play2DClipAtPoint(ringSwitchSFX, Random.Range(0.9f,1.1f));
+
     }
 
 

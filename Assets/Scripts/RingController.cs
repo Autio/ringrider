@@ -9,9 +9,13 @@ public class RingController : Singleton<RingController>
     List<GameObject> Rings = new List<GameObject>();
     List<GameObject> CircleCenters = new List<GameObject>();
 
+    List<GameObject> Enemies = new List<GameObject>();
+
     public AudioClip[] ringDeathSounds;
     public GameObject ringPrefab;
     public GameObject coinPrefab;
+
+    public GameObject enemyPrefab;
     public GameObject ringEffectPrefab;
     public GameObject circleCentrePrefab;
     public GameObject circleTextPrefab;
@@ -119,6 +123,9 @@ public class RingController : Singleton<RingController>
             circleText.transform.parent = newRing.transform;
             circleText.SetActive(false);
 
+            // Create enemies
+            CreateEnemy(newRing.GetComponent<Ring>());            
+
             // Create ring effect
             GameObject ro = CreateRingEffect(spawnPos,ringColour,radius);
             ro.transform.parent = newRing.transform;
@@ -138,6 +145,36 @@ public class RingController : Singleton<RingController>
     public void PrintMe()
     {
         Debug.Log("I exist");
+    }
+
+    // Create monsters
+    void CreateEnemy(Ring ring, bool inner = true)
+    {
+        // Can be on the inner or the outer track
+        // Ones on the outer track are still and the ones on the inner track move in the opposite direction to the player
+        float radius = ring.radius;
+        float angle = Random.Range(0, 2 * Mathf.PI);
+        GameObject enemy = null;
+        if(inner)
+        {
+            float innerRadius = radius - 0.14f;
+            enemy = Instantiate(enemyPrefab, 
+                new Vector3(ring.transform.position.x + Mathf.Cos(angle) * innerRadius, 
+                ring.transform.position.y + Mathf.Sin(angle) * innerRadius, 0), 
+                Quaternion.identity) as GameObject;
+            enemy.transform.SetParent(ring.GetEnemyTrack(inner));
+
+        } else 
+        {
+            float outerRadius = radius - 0.14f;
+            enemy = Instantiate(enemyPrefab, 
+                new Vector3(ring.transform.position.x + Mathf.Cos(angle) * outerRadius, 
+                ring.transform.position.y + Mathf.Sin(angle) * outerRadius, 0), 
+                Quaternion.identity) as GameObject;   
+        }
+
+        Enemies.Add(enemy);
+
     }
 
     GameObject CreateCircleCentre(GameObject circleCentrePrefab, Vector2 pos, Color colour, float radius, int id)
