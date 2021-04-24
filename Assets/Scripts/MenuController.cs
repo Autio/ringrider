@@ -17,7 +17,8 @@ public class MenuController : Singleton<GameController>
     public GameObject menuJuice2;
     public GameObject menuJuice3;
     public GameObject menuJuice4;
-
+    public GameObject menuJuice5;
+    public GameObject menuJuice6;
 
 
 
@@ -38,6 +39,7 @@ public class MenuController : Singleton<GameController>
 
         DrawPolygon(60, 1.5f, new Vector2(-3.4f, -6), 3, 3, ringColors[5], menuJuice2.GetComponent<LineRenderer>());
         DrawPolygon(62, 1.5f, new Vector2(3.4f, -6f), 3, 3, ringColors[5], menuJuice3.GetComponent<LineRenderer>());
+        DrawPolygon(62, 1.6f, new Vector2(0f, 6f), 3.25f, 3.25f, ringColors[7], menuJuice5.GetComponent<LineRenderer>());
 
 
 
