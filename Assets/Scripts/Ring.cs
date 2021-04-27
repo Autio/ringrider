@@ -77,6 +77,6 @@ public class Ring : MonoBehaviour
             lineRenderer.SetPosition(i, centerPos + rotationMatrix.MultiplyPoint(initialRelativePosition));
 
         }
-}
+    }
 
 }

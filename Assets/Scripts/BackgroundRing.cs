@@ -25,7 +25,7 @@ public class BackgroundRing : MonoBehaviour
     void Update()
     {
         pos += dir * speed * Time.deltaTime;
-        DrawPolygon(30, radius, pos, 0.015f, 0.015f, ringColor);
+        DrawPolygon(30, radius, pos, 0.02f, 0.02f, ringColor);
     }
 
     public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color)

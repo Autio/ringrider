@@ -11,12 +11,3 @@ public class Save
     public Character activeCharacter;
     public List<Character> unlockedCharacters = new List<Character>();
 }
-
-
-[System.Serializable]
-public class Character 
-{
-    public string name;
-    public int cost;
-    public GameObject prefab;
-}

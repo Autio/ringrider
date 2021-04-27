@@ -20,13 +20,16 @@ public class MenuController : Singleton<GameController>
     public GameObject menuJuice5;
     public GameObject menuJuice6;
 
+    Save activeSave;
+
 
 
     public Color[] ringColors;
 
     void Start()
     {
-        
+        StartCoroutine(LoadGame());
+
         // Draw all the relevant circles
         float width = 0.06f;
         float playButtonRadius = 1.2f;
@@ -58,6 +61,25 @@ public class MenuController : Singleton<GameController>
         Debug.Log(shareButtonPosition);
         Debug.Log(rateButtonPosition);
         Debug.Log(characterButtonPosition);
+    }
+
+    private IEnumerator LoadGame()
+    {
+        yield return new WaitForSeconds(0.3f);
+        try {
+            Debug.Log("Loading save");
+            activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
+            GetComponent<CharacterController>().LoadCharacters();
+
+            // Create a new save if there's none
+            if(activeSave == null)
+            {
+                activeSave = new Save();
+            }
+        } catch{
+             Debug.Log("Error loading game");
+        }
+        
     }
 
     // Update is called once per frame
@@ -96,6 +118,14 @@ public class MenuController : Singleton<GameController>
         AndroidJavaObject chooser = intentClass.CallStatic<AndroidJavaObject>("createChooser", intent, "Share");
         currentActivity.Call("startActivity", chooser);
         #endif
+    }
+
+    public void ChangeCharacter()
+    {
+        // Cycle through colours of the character and save the choice 
+
+        activeSave.activeCharacter = activeSave.activeCharacter;
+        SaveController.instance.SaveGame(activeSave);
     }
 
     public Vector2 newRingPosition (float playButtonRadius, float radius, float ringWidth, float angle)

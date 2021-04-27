@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,7 +60,7 @@ public class GameController : Singleton<GameController> {
     void Start() {
         ColourTransition();
         Advertisement.Initialize("1696406");
-        LoadGame();
+        GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
         StartGame();
 
     }
@@ -338,7 +336,15 @@ public class GameController : Singleton<GameController> {
 
     public void Ending()
     {
-        SaveGame();
+        Save save = new Save();
+        
+        save.gamePlays = gamePlays;
+        save.coins = coins;
+        save.highScore = highScore;
+        save.activeCharacter = activeCharacter;
+
+        SaveController.instance.SaveGame(save);
+
         StartCoroutine(RingController.Instance.DestroyLevel(Player.Instance.ringsReached));
         StartCoroutine(WaitEnd());
     }
@@ -395,52 +401,6 @@ public class GameController : Singleton<GameController> {
             case ShowResult.Failed:
                 Debug.LogError("The ad failed to be shown.");
                 break;
-        }
-    }
-
-    public void SaveGame()
-    {
-
-        Save save = CreateSaveGameObject();
-
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/gamesave.save");
-        bf.Serialize(file, save);
-        file.Close();
-
-
-
-    }
-
-    private Save CreateSaveGameObject()
-    {
-        Save save = new Save();
-
-        save.gamePlays = gamePlays;
-        save.coins = coins;
-        save.highScore = highScore;
-        return save;
-    }
-
-    public void LoadGame(){
-        Debug.Log("Loading game");
-        if(File.Exists(Application.persistentDataPath + "/gamesave.save"))
-        {
-            // Clear stuff if needs clearing
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/gamesave.save", FileMode.Open);
-            Save save = (Save)bf.Deserialize(file);
-            file.Close();
-
-            gamePlays = save.gamePlays;
-            coins = save.coins;
-            highScore = save.highScore;
-            unlockedCharacters = save.unlockedCharacters;
-            activeCharacter = save.activeCharacter;
-
-            Debug.Log(save.highScore);
-            Debug.Log("Game Loaded");
-
         }
     }
 
