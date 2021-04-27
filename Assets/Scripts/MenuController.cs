@@ -33,7 +33,7 @@ public class MenuController : Singleton<GameController>
         // Draw all the relevant circles
         float width = 0.06f;
         float playButtonRadius = 1.2f;
-        float gardenButtonRadius = 1f;
+        //float gardenButtonRadius = 1f;
         float otherButtonRadius = .6f;
 
         // Visual juice

@@ -15,7 +15,7 @@ public class SaveController : Singleton<SaveController>
         //Save save = CreateSaveGameObject();
 
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/gamesave.save");
+        FileStream file = File.Create(Application.persistentDataPath + "/game_save.save");
         bf.Serialize(file, save);
         file.Close();
 
@@ -32,11 +32,11 @@ public class SaveController : Singleton<SaveController>
 
     public Save LoadGame(){
         Debug.Log("Loading game");
-        if(File.Exists(Application.persistentDataPath + "/gamesave.save"))
+        if(File.Exists(Application.persistentDataPath + "/game_save.save"))
         {
             // Clear stuff if needs clearing
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/gamesave.save", FileMode.Open);
+            FileStream file = File.Open(Application.persistentDataPath + "/game_save.save", FileMode.Open);
             Save save = (Save)bf.Deserialize(file);
             file.Close();
 
@@ -48,7 +48,6 @@ public class SaveController : Singleton<SaveController>
             loadedFile.unlockedCharacters = save.unlockedCharacters;
             loadedFile.activeCharacter = save.activeCharacter;
 
-            Debug.Log(save.highScore);
             Debug.Log("Game Loaded");
 
             return loadedFile;

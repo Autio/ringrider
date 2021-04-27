@@ -19,7 +19,6 @@ public class Ring : MonoBehaviour
     public Transform innerEnemyTrack;
     public Transform outerTrack;
     public float radius = 2.0f;
-    float width = 0.07f;
 
     public int id;
     // Start is called before the first frame update

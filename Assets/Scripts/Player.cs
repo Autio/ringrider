@@ -24,9 +24,8 @@ public class Player : Singleton<Player> {
     bool onInnerTrack = true; // vs outer track
     public int ringsReached = 0;
     int points = 0;
-    int scoreMultiplier = 1;
+    // int scoreMultiplier = 1;
     float ticker = 0.4f;
-    bool started = false;
     bool ableToHopRings = false;
     float hopCoolDown = .05f;
     float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
@@ -95,7 +94,7 @@ public class Player : Singleton<Player> {
         {
             float radiusRatio = (activeRing.GetComponent<Ring>().radius + offset) / activeRing.GetComponent<Ring>().radius;
             activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
-            Debug.Log(radiusRatio + " should be smaller than " + activeRing.GetComponent<Ring>().radius);
+
             // Hop to the inner track of the circle
             transform.position = transform.position - (transform.position - activeRing.transform.position).normalized * offset;
             onInnerTrack = true;
@@ -127,7 +126,6 @@ public class Player : Singleton<Player> {
 
         // How do we set speed appropriately?
         float radiusRatio = activeRing.GetComponent<Ring>().radius / targetRing.GetComponent<Ring>().radius;
-        Debug.Log("Radius ratio: " + radiusRatio);
         innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
 
 
@@ -143,9 +141,7 @@ public class Player : Singleton<Player> {
 
         // Activate the ring effect 
         activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().enabled = true;
-        
-        
-        Destroy(activeRing.transform.Find("RingEffect(Clone)"), 15f);
+        Destroy(activeRing.transform.Find("RingEffect(Clone)").gameObject, 15f);
 
         // Activate the central circle too
         //activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().InitCircle();
@@ -238,11 +234,9 @@ public class Player : Singleton<Player> {
 
         
         hopCoolDown -= Time.deltaTime;
-        
-        
+                
         if(gc.gameState == GameController.gameStates.starting) {
             ticker -= Time.deltaTime;
-            Debug.Log("Ticker " + ticker);
 
         }
 
@@ -398,7 +392,6 @@ public class Player : Singleton<Player> {
     {
         if(collision.gameObject.layer == 7)
         {
-            Debug.Log("Left da trigger");
             ableToHopRings = false;
         }
 
@@ -428,7 +421,7 @@ public class Player : Singleton<Player> {
         if(collision.gameObject.layer == 10)
         {
 
-            Debug.Log("Game overrr");
+            Debug.Log("Game over");
             GameOver();
             Death();
             Destroy(gameObject);

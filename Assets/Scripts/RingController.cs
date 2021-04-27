@@ -26,7 +26,6 @@ public class RingController : Singleton<RingController>
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("RingController " + transform.name);
         // Grab that start ring
       //  BuildLevel(100,.7f,1.75f, startRing);
         
@@ -127,7 +126,7 @@ public class RingController : Singleton<RingController>
             // Create the ID text for the circle
             GameObject circleText = Instantiate(circleTextPrefab, spawnPos, Quaternion.identity);
             circleText.GetComponent<TextMeshPro>().text = (i + 1).ToString();
-            circleText.transform.parent = newRing.transform;
+            circleText.transform.SetParent(newRing.transform);
             circleText.SetActive(false);
 
 

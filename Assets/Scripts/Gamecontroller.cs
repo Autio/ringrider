@@ -40,8 +40,6 @@ public class GameController : Singleton<GameController> {
     float switchCooldown = 0.07f;
     public Transform block;
     public Transform bonus;
-    private float counter = 1.0f;
-    bool gameLive = false;
     int adFrequency = 5;
     public int coins;
     public int highScore;
@@ -54,7 +52,7 @@ public class GameController : Singleton<GameController> {
     // TEXTS
     Text coinCounterText;
 
-    bool firstMove = true;
+    
 
     // Use this for initialization
     void Start() {
@@ -62,7 +60,6 @@ public class GameController : Singleton<GameController> {
         Advertisement.Initialize("1696406");
         GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
         StartGame();
-
     }
 
     public void StartGame()
@@ -318,10 +315,9 @@ public class GameController : Singleton<GameController> {
     {
         // Pick a random colour and transition to it gradually
         Color newColor = backgroundColors[Random.Range(0, backgroundColors.Length)];
-        Debug.Log("Color switch");
-       // Sequence s = DOTween.Sequence();
-//        GameObject.Find("Background").GetComponent<SpriteRenderer>().DOColor(newColor, 7);
-   //     GameObject.Find("Background").GetComponent<SpriteRenderer>().DOFade(255,7);
+        // Sequence s = DOTween.Sequence();
+        // GameObject.Find("Background").GetComponent<SpriteRenderer>().DOColor(newColor, 7);
+        // GameObject.Find("Background").GetComponent<SpriteRenderer>().DOFade(255,7);
     }
 
     public void SetState(gameStates gs)
@@ -343,7 +339,7 @@ public class GameController : Singleton<GameController> {
         save.highScore = highScore;
         save.activeCharacter = activeCharacter;
 
-        SaveController.instance.SaveGame(save);
+        GameObject.Find("SaveController").GetComponent<SaveController>().SaveGame(save);
 
         StartCoroutine(RingController.Instance.DestroyLevel(Player.Instance.ringsReached));
         StartCoroutine(WaitEnd());
