@@ -73,6 +73,9 @@ public class MenuController : Singleton<GameController>
             activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
             // GetComponent<CharacterController>().LoadCharacters();
             activeCharacter = activeSave.activeCharacter;
+            // Make sure the relevant active player has been loaded
+            PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
+
             // Create a new save if there's none
             if(activeSave == null)
             {

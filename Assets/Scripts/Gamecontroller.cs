@@ -33,6 +33,8 @@ public class GameController : Singleton<GameController> {
     public int highScore;
 
     int gamePlays;
+
+    Save activeSave;
    
     public enum gameStates { menu, playing, paused, transition, starting, ending };
     public gameStates gameState = gameStates.menu;
@@ -45,7 +47,10 @@ public class GameController : Singleton<GameController> {
     void Start() {
         ColourTransition();
         Advertisement.Initialize("1696406");
-        GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
+        activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
+        activeCharacter = activeSave.activeCharacter;
+        PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
+
         StartGame();
     }
 
