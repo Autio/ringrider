@@ -5,9 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class Character 
 {
+    public int id;
     public string name;
     public int cost;
-    public GameObject prefab;
     public Color color;
+    public Transform prefab;
 }
 

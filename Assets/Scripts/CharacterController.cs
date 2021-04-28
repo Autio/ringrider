@@ -2,11 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class GameCharacterController : Singleton<GameCharacterController>
 {
-    public List<GameObject> CharacterPrefabs = new List<GameObject>();
-    public List<Character> Characters = new List<Character>();
+    List<GameObject> CharacterPrefabs = new List<GameObject>();
+    public List<GameCharacterScriptableObject> CharacterScriptableObjects = new List<GameCharacterScriptableObject>();
 
+    public void UpdateCharacter(int id)
+    {
+        // Update the colour of the actvie player object
+        Color newColor = CharacterScriptableObjects[id].color;
+    }
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -15,10 +21,7 @@ public class CharacterController : MonoBehaviour
 
     public void LoadCharacters()
     {
-        foreach(GameObject c in CharacterPrefabs)
-        {
-            Characters.Add(c.GetComponent<CharacterTemplate>().character);
-        }
+
     }
 
     // Update is called once per frame

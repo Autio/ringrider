@@ -13,7 +13,7 @@ public class RingEffect : MonoBehaviour
     
     float width = .03f;
 
-    public bool enabled = false;
+    public bool alive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +25,7 @@ public class RingEffect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(enabled)
+        if(alive)
         {   
             
             radius += Time.deltaTime;

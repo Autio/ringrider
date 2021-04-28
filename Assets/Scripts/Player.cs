@@ -140,7 +140,7 @@ public class Player : Singleton<Player> {
         
 
         // Activate the ring effect 
-        activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().enabled = true;
+        activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().alive = true;
         Destroy(activeRing.transform.Find("RingEffect(Clone)").gameObject, 15f);
 
         // Activate the central circle too

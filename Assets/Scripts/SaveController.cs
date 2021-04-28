@@ -9,34 +9,31 @@ using UnityEngine;
 public class SaveController : Singleton<SaveController>
 {
     
-    public void SaveGame(Save save)
+    public void SaveGame(Save s)
     {
-
-        //Save save = CreateSaveGameObject();
+        Save save = new Save();
+        
+        save.gamePlays = s.gamePlays;
+        save.coins = s.coins;
+        save.highScore = s.highScore;
+        save.activeCharacter = s.activeCharacter;
+        save.unlockedCharacters = s.unlockedCharacters;
 
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/game_save.save");
+        FileStream file = File.Create(Application.persistentDataPath + "/gamesave.save");
         bf.Serialize(file, save);
         file.Close();
 
     }
 
-    // public Save CreateSaveGameObject(Save save)
-    // {
-
-    //     save.gamePlays = gamePlays;
-    //     save.coins = coins;
-    //     save.highScore = highScore;
-    //     return save;
-    // }
-
     public Save LoadGame(){
         Debug.Log("Loading game");
-        if(File.Exists(Application.persistentDataPath + "/game_save.save"))
+        Debug.Log(Application.persistentDataPath);
+        if(File.Exists(Application.persistentDataPath + "/gamesave.save"))
         {
             // Clear stuff if needs clearing
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/game_save.save", FileMode.Open);
+            FileStream file = File.Open(Application.persistentDataPath + "/gamesave.save", FileMode.Open);
             Save save = (Save)bf.Deserialize(file);
             file.Close();
 

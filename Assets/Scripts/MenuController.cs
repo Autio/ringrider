@@ -21,8 +21,10 @@ public class MenuController : Singleton<GameController>
     public GameObject menuJuice6;
 
     Save activeSave;
-
-
+    // TODO: Character limitations
+    // We allow all four characters to be selected at the start
+    List<int> unlockedCharacters = new List<int>() { 0,1,2,3 } ;
+    int activeCharacter = 0;
 
     public Color[] ringColors;
 
@@ -69,16 +71,19 @@ public class MenuController : Singleton<GameController>
         try {
             Debug.Log("Loading save");
             activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
-            GetComponent<CharacterController>().LoadCharacters();
-
+            // GetComponent<CharacterController>().LoadCharacters();
+            activeCharacter = activeSave.activeCharacter;
             // Create a new save if there's none
             if(activeSave == null)
             {
                 activeSave = new Save();
+                activeCharacter = 0;
             }
         } catch{
              Debug.Log("Error loading game");
         }
+
+        // unlockedCharacters = activeSave.unlockedCharacters;
         
     }
 
@@ -123,9 +128,22 @@ public class MenuController : Singleton<GameController>
     public void ChangeCharacter()
     {
         // Cycle through colours of the character and save the choice 
+        // Current index in the list of unlocked characters
+        int index = unlockedCharacters.IndexOf(activeCharacter);
 
-        activeSave.activeCharacter = activeSave.activeCharacter;
-        SaveController.instance.SaveGame(activeSave);
+        index++;
+        if (index > unlockedCharacters.Count - 1)
+        {
+            index = 0;
+        }
+
+        activeCharacter = unlockedCharacters[index];
+        Debug.Log("Updating character colour");
+        PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
+
+        activeSave.activeCharacter = activeCharacter;
+        SaveController.Instance.SaveGame(activeSave);
+
     }
 
     public Vector2 newRingPosition (float playButtonRadius, float radius, float ringWidth, float angle)
