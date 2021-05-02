@@ -7,6 +7,7 @@ public class JuiceController : Singleton<JuiceController>
     List<Transform> TransitionCircleList = new List<Transform>();
     public Transform circlePrefab;
     public Color[] circleColors;
+    private Color prevColor;
 
     public float rate = 0.6f;
     float counter = 0;
@@ -15,7 +16,7 @@ public class JuiceController : Singleton<JuiceController>
 
     public Vector3 position;
 
-    private float expansionSpeed = 3.0f;
+    public float expansionSpeed = 3.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +31,6 @@ public class JuiceController : Singleton<JuiceController>
             counter += Time.deltaTime;
             if(counter > rate)
             {
-                Debug.Log(position);
                 counter = 0;
                 TransitionCircles(position);
                 sortingOrder++;
@@ -45,11 +45,26 @@ public class JuiceController : Singleton<JuiceController>
         Transform circle = Instantiate(circlePrefab, position, Quaternion.identity);
         TransitionCircleList.Add(circle);
         JuiceCircle jc = circle.GetComponent<JuiceCircle>();
-        jc.color = circleColors[Random.Range(0, circleColors.Length)];
+        Color newColor = prevColor;
+        while (newColor == prevColor)
+        {
+            newColor = circleColors[Random.Range(0, circleColors.Length)];
+        }
+        jc.color = newColor;
+        prevColor = newColor;
         jc.expansionSpeed = expansionSpeed;
         jc.position = position;
         expansionSpeed -= Time.deltaTime;
         circle.GetComponent<LineRenderer>().sortingOrder = sortingOrder;
+    }
+
+    public void DestroyCircles()
+    {
+        foreach (Transform t in TransitionCircleList)
+        {
+            Destroy(t.gameObject);
+        }
+        TransitionCircleList.Clear();
     }
 
 }

@@ -46,8 +46,6 @@ public class MenuController : Singleton<GameController>
         DrawPolygon(62, 1.5f, new Vector2(3.4f, -6f), 3, 3, ringColors[5], menuJuice3.GetComponent<LineRenderer>());
         DrawPolygon(62, 1.6f, new Vector2(0f, 6f), 3.25f, 3.25f, ringColors[7], menuJuice5.GetComponent<LineRenderer>());
 
-
-
         // Menu buttons
        
         DrawPolygon(60, playButtonRadius, playButton.transform.position, width, width, ringColors[0], playButton.GetComponent<LineRenderer>());
@@ -68,20 +66,25 @@ public class MenuController : Singleton<GameController>
     private IEnumerator LoadGame()
     {
         yield return new WaitForSeconds(0.3f);
+        // Create a new save if there's none
+        if(activeSave == null)
+        {
+            activeSave = new Save();
+            activeSave.gamePlays = 0;
+            activeSave.coins = 0;
+            activeSave.highScore = 0;
+            activeSave.activeCharacter = 0;
+            activeCharacter = 0;
+        }
         try {
             Debug.Log("Loading save");
-            activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
+            activeSave = SaveController.Instance.LoadGame();
             // GetComponent<CharacterController>().LoadCharacters();
             activeCharacter = activeSave.activeCharacter;
             // Make sure the relevant active player has been loaded
             PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
 
-            // Create a new save if there's none
-            if(activeSave == null)
-            {
-                activeSave = new Save();
-                activeCharacter = 0;
-            }
+
         } catch{
              Debug.Log("Error loading game");
         }
@@ -98,6 +101,16 @@ public class MenuController : Singleton<GameController>
 
     public void StartLevel()
     {
+        if(activeSave == null)
+        {
+            activeSave = new Save();
+            activeSave.gamePlays = 0;
+            activeSave.coins = 0;
+            activeSave.highScore = 0;
+            activeSave.activeCharacter = 0;
+            activeCharacter = 0;
+        }
+        SaveController.Instance.SaveGame(activeSave);
         StartCoroutine(StartLevelCoroutine());
     }
 
@@ -125,7 +138,7 @@ public class MenuController : Singleton<GameController>
         // Using intents
         AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent");
         intent.Call<AndroidJavaObject>("setAction", intentClass.GetStatic<string>("ACTION_SEND"));
-        intent.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), "Ring Rider");
+        intent.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), "market://details?id=" + Application.identifier);
         intent.Call<AndroidJavaObject>("setType", "text/plain");
 
         // Display the chooser 

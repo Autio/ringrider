@@ -42,7 +42,6 @@ public class GameController : Singleton<GameController> {
     // TEXTS
     Text coinCounterText;
 
-
     // Use this for initialization
     void Start() {
         ColourTransition();
@@ -50,10 +49,9 @@ public class GameController : Singleton<GameController> {
         activeSave = SaveController.Instance.LoadGame();
         activeCharacter = activeSave.activeCharacter;
         gamePlays = activeSave.gamePlays;
-
+        coins = activeSave.coins;
 
         PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
-
         StartGame();
     }
 
@@ -65,14 +63,22 @@ public class GameController : Singleton<GameController> {
         coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         coinCounterText.text = coins.ToString();
 
-        // Build the level
-        GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
+        // Show a transition effect
+
+        // Don't build the level right away
+        StartCoroutine(BuildLevel(.1f));
         GameObject.Find("Rider").GetComponent<Player>().ResetPlayer();
 
         // Show the menu button
         menuReturn.SetActive(true);
-
     }
+
+    private IEnumerator BuildLevel(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
+    }
+    
 
     // Update is called once per frame
     void Update() {
@@ -197,7 +203,7 @@ public class GameController : Singleton<GameController> {
         save.activeCharacter = activeCharacter;
         save.unlockedCharacters = unlockedCharacters;
 
-        GameObject.Find("SaveController").GetComponent<SaveController>().SaveGame(save);
+        SaveController.Instance.SaveGame(save);
 
         // Reset level
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
