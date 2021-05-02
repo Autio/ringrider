@@ -14,11 +14,7 @@ public class CircleCentre : MonoBehaviour
     public bool active = false;
     void Start()
     {
-        //radius = this.transform.localScale.x;
         lineRenderer = GetComponent<LineRenderer>();
-        
-
-       // DrawCircle(texture, new Color(.2f,.2f,.2f), transform.position.x, transform.position.y, 1); 
     }
 
     public void InitCircle() {
@@ -33,11 +29,9 @@ public class CircleCentre : MonoBehaviour
             circleRadius += Time.deltaTime * expansionSpeed;
             this.transform.localScale = new Vector3(circleRadius, circleRadius, circleRadius); 
             DrawPolygon(42, circleRadius / 2, this.transform.position, circleRadius, circleRadius, color);
-
         }
     }
 
-    
     public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color)
     {
         lineRenderer.startWidth = startWidth;
@@ -67,9 +61,6 @@ public class CircleCentre : MonoBehaviour
         // Make sure the circle loops perfectly by setting the last and the first points as the same
         lineRenderer.SetPosition(vertexNumber -1, lineRenderer.GetPosition(0));
 
-  
     }
     
-
-
 }

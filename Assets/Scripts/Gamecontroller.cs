@@ -47,8 +47,11 @@ public class GameController : Singleton<GameController> {
     void Start() {
         ColourTransition();
         Advertisement.Initialize("1696406");
-        activeSave = GameObject.Find("SaveController").GetComponent<SaveController>().LoadGame();
+        activeSave = SaveController.Instance.LoadGame();
         activeCharacter = activeSave.activeCharacter;
+        gamePlays = activeSave.gamePlays;
+
+
         PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
 
         StartGame();
@@ -146,36 +149,43 @@ public class GameController : Singleton<GameController> {
 
     public void Ending()
     {
-
-
+        StartCoroutine(TransitionEffect());
         StartCoroutine(RingController.Instance.DestroyLevel(Player.Instance.ringsReached));
         StartCoroutine(WaitEnd());
+    }
+
+    public IEnumerator TransitionEffect()
+    {
+        JuiceController.Instance.position = GameObject.Find("Rider").transform.position;
+
+        yield return new WaitForSeconds(.8f);
+        JuiceController.Instance.emitting = true;
+
     }
     public IEnumerator WaitEnd()
     {
         // DEBUG
-        while (true)
-        {
-            gamePlays++;
-            
-            if (gamePlays % adFrequency == 0)
-            {
-                gameState = gameStates.transition;
-                // Show ad
-                Debug.Log("Showing advertisment");
-                
-                if(Advertisement.IsReady("reward"))
-                {
-                    var options = new ShowOptions { resultCallback = HandleShowResult };
-                    Advertisement.Show("reward", options);
-                    yield return new WaitForSeconds(5f);
-                }
 
-            } else
+        gamePlays++;
+        Debug.Log("Gameplays: " + gamePlays);
+        
+        if (gamePlays % adFrequency == 0)
+        {
+            gameState = gameStates.transition;
+            // Show ad
+            Debug.Log("Showing advertisment");
+            
+            if(Advertisement.IsReady("reward"))
             {
-                yield return new WaitForSeconds(2f);
+                var options = new ShowOptions { resultCallback = HandleShowResult };
+                Advertisement.Show("reward", options);
+                yield return new WaitForSeconds(5f);
             }
 
+        } else
+        {
+            yield return new WaitForSeconds(2f);
+        }
         
         Debug.Log("Resetting level");
         yield return new WaitForSeconds(3f);
@@ -192,7 +202,7 @@ public class GameController : Singleton<GameController> {
         // Reset level
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
-        }
+        
     }
     
     private void HandleShowResult(ShowResult result)

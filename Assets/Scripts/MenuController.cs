@@ -98,8 +98,15 @@ public class MenuController : Singleton<GameController>
 
     public void StartLevel()
     {
+        StartCoroutine(StartLevelCoroutine());
+    }
+
+    public IEnumerator StartLevelCoroutine()
+    {
         Debug.Log("Starting to play the level");
-         SceneManager.LoadScene("play");
+        JuiceController.Instance.emitting = true;
+        yield return new WaitForSeconds(1.6f);
+        SceneManager.LoadScene("play");
     }
 
     public void OpenPlayStore()
