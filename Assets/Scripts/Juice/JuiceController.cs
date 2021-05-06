@@ -10,14 +10,15 @@ public class JuiceController : Singleton<JuiceController>
     private Color prevColor;
 
     public float rate = 0.6f;
-    float counter = 0;
+    public float counter = 0;
     int sortingOrder = 0;
     public bool emitting = false;
 
     public Vector3 position;
 
     public float expansionSpeed = 3.0f;
-    // Start is called before the first frame update
+    
+    public bool endure = false;    // Start is called before the first frame update
     void Start()
     {
         
@@ -32,14 +33,14 @@ public class JuiceController : Singleton<JuiceController>
             if(counter > rate)
             {
                 counter = 0;
-                TransitionCircles(position);
+                TransitionCircles(position, endure);
                 sortingOrder++;
             }
         }
     }
 
     // Expanding concentric circles
-    public void TransitionCircles(Vector3 position)
+    public void TransitionCircles(Vector3 position, bool endure)
     {   
         // Create a sequence of expanding rings just in the centre of the screen
         Transform circle = Instantiate(circlePrefab, position, Quaternion.identity);
@@ -54,6 +55,10 @@ public class JuiceController : Singleton<JuiceController>
         prevColor = newColor;
         jc.expansionSpeed = expansionSpeed;
         jc.position = position;
+        if(endure)
+        {   
+            jc.Endure();
+        }
         expansionSpeed -= Time.deltaTime;
         circle.GetComponent<LineRenderer>().sortingOrder = sortingOrder;
     }

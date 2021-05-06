@@ -77,6 +77,10 @@ public class GameController : Singleton<GameController> {
     {
         yield return new WaitForSeconds(delay);
         GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("JuiceCircle"))
+        {
+            Destroy(g);
+        }
     }
     
 

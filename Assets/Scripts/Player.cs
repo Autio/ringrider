@@ -144,7 +144,6 @@ public class Player : Singleton<Player> {
         Destroy(activeRing.transform.Find("RingEffect(Clone)").gameObject, 15f);
 
         // Activate the central circle too
-        //activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().InitCircle();
         activeRing.transform.Find("RingCentreCircle(Clone)").GetComponent<CircleCentre>().active = true;
         activeRing.transform.Find("CircleText(Clone)").gameObject.SetActive(true);
     }
@@ -272,12 +271,7 @@ public class Player : Singleton<Player> {
         // Play sound effect
         GameController.Instance.Play2DClipAtPoint(playerDeathSound, Random.Range(0.9f, 1.1f));
 
-        // Show points
-
-        // Stop movement
-        GameObject.Find("PlayTracks").GetComponent<Rotate>().active = false;
-        GameObject.Find("ObstacleTracks").GetComponent<Rotate>().active = false;
-
+       
         // Set gamestate to transition
         GameController.Instance.SetState(GameController.gameStates.transition);
 
@@ -376,15 +370,6 @@ public class Player : Singleton<Player> {
         Destroy(collision.gameObject);
         StartCoroutine(JuicyFlip());
 
-        // Reverse direction
-        // Get a multiplier
-
-
-        // Slow yourself down
-
-
-        // Bonus 2
-        // Bigger multiplier
 
     }
 

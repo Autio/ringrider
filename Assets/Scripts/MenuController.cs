@@ -10,9 +10,7 @@ public class MenuController : Singleton<GameController>
     public GameObject playButton;
     public GameObject shareButton;
     public GameObject rateButton;
-
     public GameObject characterButton;
-
     public GameObject menuJuice1;
     public GameObject menuJuice2;
     public GameObject menuJuice3;
@@ -118,7 +116,11 @@ public class MenuController : Singleton<GameController>
     {
         Debug.Log("Starting to play the level");
         JuiceController.Instance.emitting = true;
-        yield return new WaitForSeconds(1.6f);
+        JuiceController.Instance.endure = true;
+        JuiceController.Instance.expansionSpeed = 18.0f;
+        JuiceController.Instance.rate = .5f;
+        JuiceController.Instance.counter = .5f;
+        yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene("play");
     }
 

@@ -9,13 +9,18 @@ public class JuiceCircle : MonoBehaviour
     public float circleRadius = .1f;
     private LineRenderer lineRenderer;
     public Vector3 position;
+    public bool endure = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        DontDestroyOnLoad(this.gameObject);
-
+        // We could prevent the destruction of these objects in scene switching
         lineRenderer = GetComponent<LineRenderer>();
+    }
+
+    public void Endure()
+    {
+        DontDestroyOnLoad(this.gameObject);
     }
 
     // Update is called once per frame
@@ -23,7 +28,7 @@ public class JuiceCircle : MonoBehaviour
     {
         circleRadius += Time.deltaTime * expansionSpeed;
         this.transform.localScale = new Vector3(circleRadius, circleRadius, circleRadius); 
-        DrawPolygon(90, circleRadius / 2, this.transform.position, circleRadius + 0.05f, circleRadius + 0.05f, color, lineRenderer);
+        DrawPolygon(90, circleRadius / 2, this.transform.position, circleRadius + .6f, circleRadius + .6f, color, lineRenderer);
     }
 
     public void DrawPolygon(int vertexNumber, float radius, Vector3 centerPos, float startWidth, float endWidth, Color color, LineRenderer lineRenderer)
