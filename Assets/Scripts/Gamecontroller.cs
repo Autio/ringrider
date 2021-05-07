@@ -184,13 +184,14 @@ public class GameController : Singleton<GameController> {
             gameState = gameStates.transition;
             // Show ad
             Debug.Log("Showing advertisment");
-            
+            #if UNITY_ADS
             if(Advertisement.IsReady("reward"))
             {
                 var options = new ShowOptions { resultCallback = HandleShowResult };
                 Advertisement.Show("reward", options);
                 yield return new WaitForSeconds(5f);
             }
+            #endif
 
         } else
         {
