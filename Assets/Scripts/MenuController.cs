@@ -45,7 +45,6 @@ public class MenuController : Singleton<GameController>
         DrawPolygon(62, 1.6f, new Vector2(0f, 6f), 3.25f, 3.25f, ringColors[7], menuJuice5.GetComponent<LineRenderer>());
 
         // Menu buttons
-       
         DrawPolygon(60, playButtonRadius, playButton.transform.position, width, width, ringColors[0], playButton.GetComponent<LineRenderer>());
         Vector2 shareButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width,3.86f ); // Angle between 0 and 2 * pi
         DrawPolygon(60, otherButtonRadius, shareButtonPosition, width, width, ringColors[1], shareButton.GetComponent<LineRenderer>());  
@@ -55,10 +54,6 @@ public class MenuController : Singleton<GameController>
               
         Vector2 characterButtonPosition = newRingPosition(playButtonRadius, otherButtonRadius, width, 5.22f); // Angle between 0 and 2 * pi
         DrawPolygon(60, otherButtonRadius, characterButtonPosition, width, width, ringColors[3], characterButton.GetComponent<LineRenderer>());
-
-        Debug.Log(shareButtonPosition);
-        Debug.Log(rateButtonPosition);
-        Debug.Log(characterButtonPosition);
     }
 
     private IEnumerator LoadGame()
@@ -88,7 +83,6 @@ public class MenuController : Singleton<GameController>
         }
 
         // unlockedCharacters = activeSave.unlockedCharacters;
-        
     }
 
     // Update is called once per frame
@@ -199,9 +193,6 @@ public class MenuController : Singleton<GameController>
                                     new Vector4(0, 0, 0, 1));
             Vector3 initialRelativePosition = new Vector3(0, radius, 0);
             lineRenderer.SetPosition(i, centerPos + rotationMatrix.MultiplyPoint(initialRelativePosition));
-
-
-
             }
 
         lineRenderer.SetPosition(vertexNumber -1, lineRenderer.GetPosition(0));

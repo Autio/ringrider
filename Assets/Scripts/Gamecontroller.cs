@@ -13,7 +13,6 @@ using Random=UnityEngine.Random;
 
 public class GameController : Singleton<GameController> {
 
-    public GameObject playContainer;
     public GameObject menuReturn;
     public Transform[] playTracks = new Transform[2];
     public Transform[] playTrackPositions = new Transform[2];
@@ -26,18 +25,16 @@ public class GameController : Singleton<GameController> {
     public Color[] backgroundColors;
     public Transform rider;
     float switchCooldown = 0.07f;
-    public Transform block;
-    public Transform bonus;
     int adFrequency = 5;
     public int coins;
     public int highScore;
 
     int gamePlays;
-
-    Save activeSave;
    
     public enum gameStates { menu, playing, paused, transition, starting, ending };
     public gameStates gameState = gameStates.menu;
+
+    Save activeSave;
 
     // TEXTS
     Text coinCounterText;
@@ -45,28 +42,28 @@ public class GameController : Singleton<GameController> {
     // Use this for initialization
     void Start() {
         ColourTransition();
+
         Advertisement.Initialize("1696406");
+
         activeSave = SaveController.Instance.LoadGame();
         activeCharacter = activeSave.activeCharacter;
         gamePlays = activeSave.gamePlays;
         coins = activeSave.coins;
 
         PlayerCharacterController.Instance.UpdateCharacter(activeCharacter);
+
         StartGame();
     }
 
     public void StartGame()
     {
-        Debug.Log("Starting game");
         gameState = gameStates.starting;
 
         coinCounterText = GameObject.Find("CoinCounter").GetComponent<Text>();
         coinCounterText.text = coins.ToString();
 
-        // Show a transition effect
-
         // Don't build the level right away
-        StartCoroutine(BuildLevel(.1f));
+        StartCoroutine(BuildLevel(.02f));
         GameObject.Find("Rider").GetComponent<Player>().ResetPlayer();
 
         // Show the menu button
@@ -77,6 +74,8 @@ public class GameController : Singleton<GameController> {
     {
         yield return new WaitForSeconds(delay);
         GetComponent<RingController>().BuildLevel(100,.7f,1.75f);
+
+        // Make sure no visual effect transition circles are visible
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("JuiceCircle"))
         {
             Destroy(g);
@@ -86,23 +85,8 @@ public class GameController : Singleton<GameController> {
 
     // Update is called once per frame
     void Update() {
-
-
+        // When can the player hop again?
         switchCooldown -= Time.deltaTime;
-
-    }
-
-    void InitialiseScene()
-    {
-        // Start moving the player
-        
-
-        // Run juicy initialisation animations
-        // InitRing();
-        // Activate player so they drop
-        // Then deactivate their gravity
-
-
     }
 
     bool CheckSpawnProximity()
@@ -127,8 +111,6 @@ public class GameController : Singleton<GameController> {
 
     public void InitTrack()
     {
-        Debug.Log("Switching track!");
-
         if (rider.transform.parent.name != "PlayTrack1" && rider.transform.parent.name != "PlayTrack2")
         {
             rider.transform.parent = GameObject.Find("PlayTrack1").transform;

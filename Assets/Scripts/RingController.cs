@@ -22,7 +22,7 @@ public class RingController : Singleton<RingController>
     
     public GameObject startRing;
     public Color[] ringColours;
-    AudioSource audioSource;
+ 
     // Start is called before the first frame update
     void Start()
     {

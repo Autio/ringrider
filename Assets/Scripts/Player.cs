@@ -23,17 +23,12 @@ public class Player : Singleton<Player> {
     bool coinSoundsUp = true;
     bool onInnerTrack = true; // vs outer track
     public int ringsReached = 0;
-    int points = 0;
-    // int scoreMultiplier = 1;
+
     float ticker = 0.4f;
     bool ableToHopRings = false;
-    float hopCoolDown = .05f;
-    float speedModifier = 1.02f; // How much do the rings speed up after finishing a lap
-    // Use this for initialization
+    float hopCoolDown = .05f;    // Use this for initialization
     void Awake () {
         ResetPlayer();
-        
-        //GameObject.Find("LapText").GetComponent<Text>().text = "Laps: " + lapCounter.ToString();
     }
 
     private void Start() {
@@ -73,12 +68,12 @@ public class Player : Singleton<Player> {
         catch {
             Debug.Log("Error with input");
         }
-
     }
 
     public void HopTracks()
     {
         // Amount needed to jump across the circle width
+        // Can make dynamic?
         float offset = .28f;
         if(onInnerTrack)
         {
@@ -110,34 +105,30 @@ public class Player : Singleton<Player> {
         Transform trigger = targetRing.transform.Find("Trigger");
         transform.position = (trigger.position + ((targetRing.transform.position - trigger.position).normalized * .18f));
         transform.parent = targetRing.transform.Find("Inner Track").transform;
+
         // Deactivate the trigger!
         trigger.gameObject.SetActive(false);
 
         // Stop rotating the old ring, start rotating the new one
         Transform oldInnerTrack = activeRing.transform.Find("Inner Track");
         Transform innerTrack = targetRing.transform.Find("Inner Track");
-        // Transform oldEnemyInnerTrack = activeRing.transform.Find("Enemy Inner Track");
-        // Transform enemyInnerTrack = targetRing.transform.Find("Enemy Inner Track");
+
         oldInnerTrack.GetComponent<Rotate>().enabled = false;
 
         innerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
-        // enemyInnerTrack.GetComponent<Rotate>().dir = !oldInnerTrack.GetComponent<Rotate>().dir;
-
-
+   
         // How do we set speed appropriately?
         float radiusRatio = activeRing.GetComponent<Ring>().radius / targetRing.GetComponent<Ring>().radius;
         innerTrack.GetComponent<Rotate>().speed = activeRing.transform.Find("Inner Track").GetComponent<Rotate>().speed * radiusRatio;
 
-
         innerTrack.GetComponent<Rotate>().active = true;
         innerTrack.GetComponent<Rotate>().enabled = true;
+
         activeRing = targetRing;
         CameraToNewRing(activeRing);
 
         // Make a sound 
         RingSwitchSound(activeRing.GetComponent<Ring>().radius);
-        
-        
 
         // Activate the ring effect 
         activeRing.transform.Find("RingEffect(Clone)").GetComponent<RingEffect>().alive = true;
@@ -213,6 +204,7 @@ public class Player : Singleton<Player> {
         vcam.LookAt = ring.transform;
         vcam.Follow = ring.transform;
 
+        // Should the camera rotate?
     }
 
 
@@ -222,28 +214,24 @@ public class Player : Singleton<Player> {
             activeRing = GameObject.Find("StartRing");
             transform.parent = activeRing.transform.Find("Inner Track");
             GameObject.Find("StartRing").transform.Find("Inner Track").GetComponent<Rotate>().enabled = true;
+
             // Game is now playing
             gc = GameObject.Find("GameController").GetComponent<GameController>();
-            gc.gameState = GameController.gameStates.playing;
-            //gc.menuReturn.SetActive(false);
-            
+            gc.gameState = GameController.gameStates.playing;            
     }
+
     // Update is called once per frame
     void Update () {
-
         
         hopCoolDown -= Time.deltaTime;
-                
         if(gc.gameState == GameController.gameStates.starting) {
             ticker -= Time.deltaTime;
-
         }
 
         // Starts the game flow
         if(ticker < 0 && GameController.instance.gameState == GameController.gameStates.starting) 
         {   
             SetPlayerStart();
-
         }
 		if(GameController.Instance.gameState == GameController.gameStates.starting)
         {
@@ -251,62 +239,19 @@ public class Player : Singleton<Player> {
         }
 	}
 
-    void DoLap()
-    {
-        // increase rotation speed
-        lapCounter++;
-        //Debug.Log("Lap! " + lapCounter.ToString());
-
-        GameObject.Find("PlayTracks").GetComponent<Rotate>().speed *= speedModifier;
-
-        // Display laps
-        UpdateText(GameObject.Find("LapText").GetComponent<Text>(), lapCounter.ToString());
-
-    }
-
-
-
     void GameOver()
     {
         // Play sound effect
         GameController.Instance.Play2DClipAtPoint(playerDeathSound, Random.Range(0.9f, 1.1f));
-
        
         // Set gamestate to transition
         GameController.Instance.SetState(GameController.gameStates.transition);
-
-        // Juice
-        // Move player back to centre
-        // Sequence seq = DOTween.Sequence();
-        // seq.Append(this.transform.DOScale(0.25f, 0.1f));
-        // seq.Append(this.transform.DOScale(0.05f, 0.1f));
-        // seq.Append(this.transform.DOScale(0.4f, 0.1f));
 
         // this.transform.DOScale(0.06f, 3.2f);
         this.transform.DOMove(new Vector3(0, 0, 0), 3.2f);
 
         // Reset scene after a delay
         GameController.Instance.Ending();
-
-    }
-
-    void Points()
-    {
-        points++;
-        UpdateText(GameObject.Find("PointsText").GetComponent<Text>(), points.ToString());
-//        GameObject.Find("PointsText").GetComponent<Text>().text = "Points: " + points.ToString();
-    }
-
-
-    private void UpdateText(Text t, string s)
-    {
-        t.text = s;
-
-        Sequence seq = DOTween.Sequence();
-
-        seq.Append(t.transform.DOScale(1.1f, 0.2f));
-        seq.Append(t.transform.DOScale(0.9f, 0.2f));
-        seq.Append(t.transform.DOScale(1.0f, 0.2f));
 
     }
 
@@ -360,16 +305,6 @@ public class Player : Singleton<Player> {
         GameObject.Find("ObstacleTracks").GetComponent<Rotate>().FlipDir();
         GameObject.Find("PlayTracks").GetComponent<Rotate>().FlipDir();
         yield return new WaitForSeconds(0.02f);
-
-    }
-
-    private void PickUpBonus(Collider2D collision)
-    {
-        // Bonus 1 
-        // Destroy bonus object
-        Destroy(collision.gameObject);
-        StartCoroutine(JuicyFlip());
-
 
     }
 
@@ -448,13 +383,6 @@ public class Player : Singleton<Player> {
             GameObject.Find("PlayTracks").GetComponent<Rotate>().active = true;
 
             GameController.Instance.InitTrack();
-
-
         }
-
-    
     }
-
-    
-
 }
